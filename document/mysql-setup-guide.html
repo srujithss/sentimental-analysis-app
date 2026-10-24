@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MySQL Setup Guide — Sentiment Analysis</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --card-bg: #f8fafc;
+            --accent: #2563eb;
+            --accent-light: #eff6ff;
+            --green: #059669;
+            --green-bg: #ecfef5;
+            --red: #dc2626;
+            --red-bg: #fef2f2;
+            --amber: #d97706;
+            --amber-bg: #fffbeb;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            padding: 40px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .doc-header {
+            text-align: center;
+            margin-bottom: 48px;
+            padding-bottom: 32px;
+            border-bottom: 2px solid var(--border);
+        }
+        .doc-header h1 { font-size: 30px; font-weight: 800; margin-bottom: 8px; }
+        .doc-header .app-name { color: var(--accent); }
+        .doc-header p { color: var(--muted); font-size: 15px; }
+
+        .toc {
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 8px; padding: 20px 28px; margin-bottom: 40px;
+        }
+        .toc h2 {
+            font-size: 15px; font-weight: 700; margin-bottom: 10px;
+            color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .toc ol { padding-left: 20px; }
+        .toc li { padding: 3px 0; font-size: 14px; }
+        .toc a { color: var(--accent); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+
+        .section { margin-bottom: 48px; }
+        h2 { font-size: 22px; font-weight: 700; margin-bottom: 16px; padding-top: 8px; }
+        h3 { font-size: 17px; font-weight: 600; margin: 20px 0 10px; }
+        p { margin-bottom: 12px; font-size: 15px; }
+
+        table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+        th {
+            text-align: left; padding: 10px 14px; background: var(--card-bg);
+            border-bottom: 2px solid var(--border); font-size: 12px;
+            font-weight: 600; text-transform: uppercase; color: var(--muted);
+        }
+        td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+
+        code {
+            background: #f1f5f9; padding: 2px 6px; border-radius: 4px;
+            font-size: 13px; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+        }
+        pre {
+            background: #1e293b; color: #e2e8f0; padding: 16px 20px;
+            border-radius: 8px; overflow-x: auto; margin: 12px 0;
+            font-size: 13px; line-height: 1.6;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+        }
+        pre .comment { color: #94a3b8; }
+        pre .highlight { color: #7dd3fc; }
+        pre .value { color: #86efac; }
+
+        .callout {
+            border-radius: 8px; padding: 14px 18px; margin: 16px 0;
+            font-size: 14px; display: flex; gap: 10px; align-items: flex-start;
+        }
+        .callout-icon { font-size: 18px; flex-shrink: 0; line-height: 1.4; }
+        .callout-info { background: var(--accent-light); border: 1px solid #bfdbfe; }
+        .callout-warn { background: var(--amber-bg); border: 1px solid #fde68a; }
+        .callout-tip { background: var(--green-bg); border: 1px solid #a7f3d0; }
+        .callout-danger { background: var(--red-bg); border: 1px solid #fecaca; }
+
+        .steps { list-style: none; padding: 0; counter-reset: step; }
+        .steps li {
+            counter-increment: step;
+            position: relative;
+            padding: 16px 20px 16px 64px;
+            margin-bottom: 12px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .steps li::before {
+            content: counter(step);
+            position: absolute; left: 18px; top: 14px;
+            width: 30px; height: 30px;
+            background: var(--accent); color: #fff;
+            font-weight: 700; font-size: 14px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .steps li strong { display: block; font-size: 15px; margin-bottom: 4px; }
+
+        .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; }
+        .badge-default { background: #dcfce7; color: #166534; }
+        .badge-mysql { background: #dbeafe; color: #1e40af; }
+
+        .compare-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0;
+        }
+        .compare-card {
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 8px; padding: 16px;
+        }
+        .compare-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+        .compare-card pre { font-size: 12px; margin: 0; }
+
+        .doc-footer {
+            margin-top: 48px; padding-top: 24px;
+            border-top: 1px solid var(--border);
+            font-size: 12px; color: var(--muted); text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ==================== HEADER ==================== -->
+<div class="doc-header">
+    <h1><span class="app-name">MySQL Setup Guide</span></h1>
+    <p>How to connect the Sentiment Analysis application to MySQL</p>
+    <p style="margin-top:4px;font-size:13px;color:#94a3b8;">
+        Switching from <span class="badge badge-default">H2 (default)</span> to <span class="badge badge-mysql">MySQL</span>
+    </p>
+</div>
+
+<!-- ==================== TOC ==================== -->
+<nav class="toc">
+    <h2>Table of Contents</h2>
+    <ol>
+        <li><a href="#overview">Overview: H2 vs MySQL</a></li>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#quick-start">Quick Start (3 Steps)</a></li>
+        <li><a href="#env-variables">Environment Variables</a></li>
+        <li><a href="#config-file">Configuration File Details</a></li>
+        <li><a href="#mysql-setup">MySQL Server Setup</a></li>
+        <li><a href="#run-commands">Run Commands</a></li>
+        <li><a href="#verify">Verify the Connection</a></li>
+        <li><a href="#migration">Migrating Data from H2 to MySQL</a></li>
+        <li><a href="#production">Production Recommendations</a></li>
+        <li><a href="#troubleshooting">Troubleshooting</a></li>
+    </ol>
+</nav>
+
+<!-- ==================== 1. OVERVIEW ==================== -->
+<div class="section" id="overview">
+    <h2>1. Overview: H2 vs MySQL</h2>
+    <p>
+        By default, the application uses an <strong>H2 file-based database</strong> which requires zero setup.
+        For production or shared environments, you can switch to <strong>MySQL</strong> by activating the
+        <code>mysql</code> Spring profile. <strong>No code changes are needed</strong> &#8212; it is purely a configuration switch.
+    </p>
+
+    <div class="compare-grid">
+        <div class="compare-card">
+            <h4><span class="badge badge-default">H2 (Default)</span></h4>
+            <pre>
+<span class="comment"># No setup needed</span>
+<span class="comment"># Data stored in ./data/sentimentdb</span>
+<span class="comment"># H2 Console at /h2-console</span>
+<span class="comment"># Good for: dev, demos, single-user</span>
+
+java -jar sentiment-analysis.jar</pre>
+        </div>
+        <div class="compare-card">
+            <h4><span class="badge badge-mysql">MySQL</span></h4>
+            <pre>
+<span class="comment"># Requires MySQL 8.0+ running</span>
+<span class="comment"># Data stored in MySQL server</span>
+<span class="comment"># H2 Console disabled</span>
+<span class="comment"># Good for: production, multi-user</span>
+
+java -jar sentiment-analysis.jar \
+  <span class="highlight">--spring.profiles.active=mysql</span></pre>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== 2. PREREQUISITES ==================== -->
+<div class="section" id="prerequisites">
+    <h2>2. Prerequisites</h2>
+
+    <table>
+        <thead><tr><th>Requirement</th><th>Details</th></tr></thead>
+        <tbody>
+            <tr><td><strong>MySQL Server</strong></td><td>Version 8.0 or later, running and accessible</td></tr>
+            <tr><td><strong>MySQL User</strong></td><td>A user with privileges to create databases and tables</td></tr>
+            <tr><td><strong>Network Access</strong></td><td>The application must be able to reach the MySQL host and port</td></tr>
+        </tbody>
+    </table>
+
+    <div class="callout callout-info">
+        <span class="callout-icon">&#9432;</span>
+        <div>The MySQL JDBC driver (<code>mysql-connector-j</code>) is already included in the application's dependencies. No additional libraries need to be installed.</div>
+    </div>
+</div>
+
+<!-- ==================== 3. QUICK START ==================== -->
+<div class="section" id="quick-start">
+    <h2>3. Quick Start (3 Steps)</h2>
+
+    <p>If MySQL is already running on <code>localhost:3306</code> with user <code>root</code> / password <code>root</code>, you only need to do this:</p>
+
+    <ol class="steps">
+        <li>
+            <strong>Ensure MySQL is running</strong>
+            <pre>mysql -u root -p -e "SELECT VERSION();"</pre>
+        </li>
+        <li>
+            <strong>Set the Spring profile to <code>mysql</code></strong>
+            <pre>java -jar target/sentiment-analysis-0.0.1-SNAPSHOT.jar \
+  <span class="highlight">--spring.profiles.active=mysql</span></pre>
+            <p style="margin-top:8px;">Or via environment variable:</p>
+            <pre>export SPRING_PROFILES_ACTIVE=mysql
+java -jar target/sentiment-analysis-0.0.1-SNAPSHOT.jar</pre>
+        </li>
+        <li>
+            <strong>Done!</strong>
+            The application will automatically create the <code>sentimentdb</code> database and all tables on first startup.
+        </li>
+    </ol>
+
+    <div class="callout callout-tip">
+        <span class="callout-icon">&#10003;</span>
+        <div>That's it for the default setup! If your MySQL uses a different host, port, username, or password, continue to the next section to configure environment variables.</div>
+    </div>
+</div>
+
+<!-- ==================== 4. ENVIRONMENT VARIABLES ==================== -->
+<div class="section" id="env-variables">
+    <h2>4. Environment Variables</h2>
+
+    <p>The MySQL profile uses environment variables with sensible defaults. Override only the ones that differ from your setup:</p>
+
+    <table>
+        <thead><tr><th>Variable</th><th>Default</th><th>Description</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><code>DB_HOST</code></td>
+                <td><code>localhost</code></td>
+                <td>MySQL server hostname or IP address</td>
+            </tr>
+            <tr>
+                <td><code>DB_PORT</code></td>
+                <td><code>3306</code></td>
+                <td>MySQL server port</td>
+            </tr>
+            <tr>
+                <td><code>DB_NAME</code></td>
+                <td><code>sentimentdb</code></td>
+                <td>Database name (auto-created if it doesn't exist)</td>
+            </tr>
+            <tr>
+                <td><code>DB_USERNAME</code></td>
+                <td><code>root</code></td>
+                <td>MySQL username</td>
+            </tr>
+            <tr>
+                <td><code>DB_PASSWORD</code></td>
+                <td><code>root</code></td>
+                <td>MySQL password</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Example: Custom MySQL Connection</h3>
+    <pre><span class="comment"># Set environment variables</span>
+export DB_HOST=<span class="value">192.168.1.100</span>
+export DB_PORT=<span class="value">3306</span>
+export DB_NAME=<span class="value">sentiment_prod</span>
+export DB_USERNAME=<span class="value">sentiment_user</span>
+export DB_PASSWORD=<span class="value">MySecurePassword123</span>
+
+<span class="comment"># Run with MySQL profile</span>
+java -jar target/sentiment-analysis-0.0.1-SNAPSHOT.jar \
+  --spring.profiles.active=mysql</pre>
+
+    <h3>Single-line Alternative</h3>
+    <pre>DB_HOST=192.168.1.100 DB_USERNAME=sentiment_user DB_PASSWORD=MySecurePassword123 \
+  java -jar target/sentiment-analysis-0.0.1-SNAPSHOT.jar \
+  --spring.profiles.active=mysql</pre>
+</div>
+
+<!-- ==================== 5. CONFIG FILE ==================== -->
+<div class="section" id="config-file">
+    <h2>5. Configuration File Details</h2>
+
+    <p>The MySQL configuration lives in <code>src/main/resources/application-mysql.yml</code>. This file is activated only when the <code>mysql</code> profile is enabled. Here is the complete file:</p>
+
+    <pre><span class="comment"># application-mysql.yml</span>
+spring:
+  datasource:
+    url: jdbc:mysql://<span class="highlight">${DB_HOST:localhost}</span>:<span class="highlight">${DB_PORT:3306}</span>/<span class="highlight">${DB_NAME:sentimentdb}</span>?createDatabaseIfNotExist=true&amp;useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC
+    username: <span class="highlight">${DB_USERNAME:root}</span>
+    password: <span class="highlight">${DB_PASSWORD:root}</span>
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+  h2:
+    console:
+      enabled: false</pre>
+
+    <h3>What Each Setting Does</h3>
+    <table>
+        <thead><tr><th>Setting</th><th>Purpose</th></tr></thead>
+        <tbody>
+            <tr><td><code>createDatabaseIfNotExist=true</code></td><td>Automatically creates the database on first connection if it doesn't exist</td></tr>
+            <tr><td><code>useSSL=false</code></td><td>Disables SSL for local connections (enable for production, see section 10)</td></tr>
+            <tr><td><code>allowPublicKeyRetrieval=true</code></td><td>Allows RSA public key retrieval for <code>caching_sha2_password</code> auth (MySQL 8 default)</td></tr>
+            <tr><td><code>serverTimezone=UTC</code></td><td>Prevents timezone mismatch errors between JVM and MySQL</td></tr>
+            <tr><td><code>MySQLDialect</code></td><td>Tells Hibernate to generate MySQL-compatible SQL</td></tr>
+            <tr><td><code>h2.console.enabled=false</code></td><td>Disables the H2 web console (not needed with MySQL)</td></tr>
+        </tbody>
+    </table>
+
+    <div class="callout callout-warn">
+        <span class="callout-icon">&#9888;</span>
+        <div><strong>Do not edit <code>application.yml</code></strong> to switch databases. The profile-based approach (<code>application-mysql.yml</code>) keeps both configurations clean and lets you switch with a single flag.</div>
+    </div>
+</div>
+
+<!-- ==================== 6. MYSQL SERVER SETUP ==================== -->
+<div class="section" id="mysql-setup">
+    <h2>6. MySQL Server Setup</h2>
+
+    <h3>Install MySQL</h3>
+    <table>
+        <thead><tr><th>Platform</th><th>Command</th></tr></thead>
+        <tbody>
+            <tr><td><strong>macOS</strong> (Homebrew)</td><td><code>brew install mysql &amp;&amp; brew services start mysql</code></td></tr>
+            <tr><td><strong>Ubuntu / Debian</strong></td><td><code>sudo apt install mysql-server &amp;&amp; sudo systemctl start mysql</code></td></tr>
+            <tr><td><strong>Windows</strong></td><td>Download MySQL Installer from <code>dev.mysql.com/downloads/installer/</code></td></tr>
+            <tr><td><strong>Docker</strong></td><td>See Docker command below</td></tr>
+        </tbody>
+    </table>
+
+    <h3>Docker (Recommended for Quick Setup)</h3>
+    <pre><span class="comment"># Start MySQL in Docker</span>
+docker run -d \
+  --name sentiment-mysql \
+  -e MYSQL_ROOT_PASSWORD=root \
+  -e MYSQL_DATABASE=sentimentdb \
+  -p 3306:3306 \
+  mysql:8.0
+
+<span class="comment"># Then run the application</span>
+java -jar target/sentiment-analysis-0.0.1-SNAPSHOT.jar \
+  --spring.profiles.active=mysql</pre>
+
+    <h3>Create a Dedicated MySQL User (Recommended)</h3>
+    <p>Instead of using <code>root</code>, create a dedicated user for the application:</p>
+    <pre><span class="comment">-- Connect to MySQL as root</span>
+mysql -u root -p
+
+<span class="comment">-- Create the database</span>
+CREATE DATABASE IF NOT EXISTS sentimentdb
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+<span class="comment">-- Create a dedicated user</span>
+CREATE USER '<span class="value">sentiment_user</span>'@'%'
+  IDENTIFIED BY '<span class="value">YourStrongPassword</span>';
+
+<span class="comment">-- Grant privileges only on the sentiment database</span>
+GRANT ALL PRIVILEGES ON sentimentdb.* TO 'sentiment_user'@'%';
+FLUSH PRIVILEGES;</pre>
+
+    <div class="callout callout-info">
+        <span class="callout-icon">&#9432;</span>
+        <div>The <code>utf8mb4</code> character set is essential for storing Dravidian scripts (Tamil, Malayalam, Kannada, Telugu) correctly. MySQL 8 uses <code>utf8mb4</code> by default.</div>
+    </div>
+</div>
+
+<!-- ==================== 7. RUN COMMANDS ==================== -->
+<div class="section" id="run-commands">
+    <h2>7. Run Commands</h2>
+
+    <h3>Option A: Command-line Flag</h3>
+    <pre><span class="comment"># Using the JAR</span>
+java -jar target/sentiment-analysis-0.0.1-SNAPSHOT.jar --spring.profiles.active=mysql
+
+<span class="comment"># Using Maven</span>
+./mvnw spring-boot:run -Dspring-boot.run.profiles=mysql</pre>
+
+    <h3>Option B: Environment Variable</h3>
+    <pre>export SPRING_PROFILES_ACTIVE=mysql
+java -jar target/sentiment-analysis-0.0.1-SNAPSHOT.jar</pre>
+
+    <h3>Option C: With All Custom Variables</h3>
+    <pre>export SPRING_PROFILES_ACTIVE=mysql
+export DB_HOST=db.example.com
+export DB_PORT=3306
+export DB_NAME=sentimentdb
+export DB_USERNAME=sentiment_user
+export DB_PASSWORD=YourStrongPassword
+export ADMIN_PASSWORD=MyAdminPass123
+
+java -jar target/sentiment-analysis-0.0.1-SNAPSHOT.jar</pre>
+
+    <h3>Option D: IntelliJ IDEA</h3>
+    <p>In your Run Configuration:</p>
+    <ol style="padding-left:24px;font-size:14px;margin-bottom:12px;">
+        <li>Open <strong>Run &gt; Edit Configurations</strong></li>
+        <li>Select your Spring Boot configuration</li>
+        <li>In <strong>Active profiles</strong>, enter: <code>mysql</code></li>
+        <li>In <strong>Environment variables</strong>, add: <code>DB_USERNAME=sentiment_user;DB_PASSWORD=YourPassword</code></li>
+        <li>Click <strong>Apply</strong> and <strong>Run</strong></li>
+    </ol>
+</div>
+
+<!-- ==================== 8. VERIFY ==================== -->
+<div class="section" id="verify">
+    <h2>8. Verify the Connection</h2>
+
+    <ol class="steps">
+        <li>
+            <strong>Check the startup logs</strong>
+            Look for this line in the application output:
+            <pre>HikariPool-1 - Starting...
+HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@...
+HikariPool-1 - Start completed.</pre>
+            <p>If you see <code>HikariPool</code> starting with a MySQL connection, it's working.</p>
+        </li>
+        <li>
+            <strong>Verify tables were created</strong>
+            <pre>mysql -u root -p sentimentdb -e "SHOW TABLES;"
+
++------------------------+
+| Tables_in_sentimentdb  |
++------------------------+
+| app_user               |
+| prediction_record      |
++------------------------+</pre>
+        </li>
+        <li>
+            <strong>Verify the admin account</strong>
+            <pre>mysql -u root -p sentimentdb -e "SELECT username, role FROM app_user;"
+
++----------+-------+
+| username | role  |
++----------+-------+
+| admin    | ADMIN |
++----------+-------+</pre>
+        </li>
+        <li>
+            <strong>Test the application</strong>
+            Open <code>http://localhost:8080</code> in a browser, log in with <code>admin</code> / <code>Admin@12345</code>, and run a sentiment analysis.
+        </li>
+    </ol>
+</div>
+
+<!-- ==================== 9. MIGRATION ==================== -->
+<div class="section" id="migration">
+    <h2>9. Migrating Data from H2 to MySQL</h2>
+
+    <p>If you have existing data in the H2 database and want to move it to MySQL:</p>
+
+    <ol class="steps">
+        <li>
+            <strong>Export data from H2</strong>
+            Open the H2 console at <code>http://localhost:8080/h2-console</code> (with the default H2 profile) and run:
+            <pre>SELECT * FROM APP_USER;
+SELECT * FROM PREDICTION_RECORD;</pre>
+            <p>Export the results as CSV or SQL INSERT statements.</p>
+        </li>
+        <li>
+            <strong>Start the app with MySQL profile</strong>
+            This creates empty tables in MySQL.
+            <pre>java -jar target/sentiment-analysis-0.0.1-SNAPSHOT.jar \
+  --spring.profiles.active=mysql</pre>
+        </li>
+        <li>
+            <strong>Import data into MySQL</strong>
+            Run your exported INSERT statements against MySQL:
+            <pre>mysql -u root -p sentimentdb &lt; exported_data.sql</pre>
+        </li>
+    </ol>
+
+    <div class="callout callout-warn">
+        <span class="callout-icon">&#9888;</span>
+        <div>The admin account is recreated on every startup if it doesn't exist, so you don't need to migrate it. User accounts and prediction records are the data to migrate.</div>
+    </div>
+</div>
+
+<!-- ==================== 10. PRODUCTION ==================== -->
+<div class="section" id="production">
+    <h2>10. Production Recommendations</h2>
+
+    <table>
+        <thead><tr><th>Area</th><th>Recommendation</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><strong>SSL</strong></td>
+                <td>Change <code>useSSL=false</code> to <code>useSSL=true&amp;requireSSL=true</code> in <code>application-mysql.yml</code> for encrypted connections.</td>
+            </tr>
+            <tr>
+                <td><strong>Dedicated user</strong></td>
+                <td>Never use <code>root</code> in production. Create a user with only the necessary privileges (see section 6).</td>
+            </tr>
+            <tr>
+                <td><strong>Password security</strong></td>
+                <td>Always set <code>DB_PASSWORD</code> and <code>ADMIN_PASSWORD</code> via environment variables or a secrets manager. Never use the defaults.</td>
+            </tr>
+            <tr>
+                <td><strong>DDL strategy</strong></td>
+                <td>Consider changing <code>spring.jpa.hibernate.ddl-auto</code> from <code>update</code> to <code>validate</code> in production, and manage schema changes with a migration tool (Flyway or Liquibase).</td>
+            </tr>
+            <tr>
+                <td><strong>Connection pool</strong></td>
+                <td>Spring Boot uses HikariCP by default with 10 connections. Adjust <code>spring.datasource.hikari.maximum-pool-size</code> based on load.</td>
+            </tr>
+            <tr>
+                <td><strong>Character set</strong></td>
+                <td>Ensure the MySQL database uses <code>utf8mb4</code> for full Unicode support (required for Dravidian scripts).</td>
+            </tr>
+            <tr>
+                <td><strong>Backups</strong></td>
+                <td>Set up regular <code>mysqldump</code> backups: <code>mysqldump -u root -p sentimentdb &gt; backup.sql</code></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ==================== 11. TROUBLESHOOTING ==================== -->
+<div class="section" id="troubleshooting">
+    <h2>11. Troubleshooting</h2>
+
+    <table>
+        <thead><tr><th style="width:35%">Error</th><th>Cause &amp; Fix</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><code>Communications link failure</code></td>
+                <td>MySQL is not running or not reachable. Check: <code>mysql -u root -p -e "SELECT 1;"</code><br>Verify the host, port, and firewall rules.</td>
+            </tr>
+            <tr>
+                <td><code>Access denied for user 'root'@'localhost'</code></td>
+                <td>Wrong username or password. Verify <code>DB_USERNAME</code> and <code>DB_PASSWORD</code> environment variables match your MySQL credentials.</td>
+            </tr>
+            <tr>
+                <td><code>Unknown database 'sentimentdb'</code></td>
+                <td>The <code>createDatabaseIfNotExist=true</code> flag should handle this. If it fails, create manually: <code>CREATE DATABASE sentimentdb;</code></td>
+            </tr>
+            <tr>
+                <td><code>Public Key Retrieval is not allowed</code></td>
+                <td>The <code>allowPublicKeyRetrieval=true</code> flag is already set. If you see this, ensure you're using the <code>mysql</code> profile, not the default.</td>
+            </tr>
+            <tr>
+                <td><code>The server time zone value 'XXX' is unrecognized</code></td>
+                <td>The <code>serverTimezone=UTC</code> flag handles this. If it persists, set MySQL's timezone: <code>SET GLOBAL time_zone = '+00:00';</code></td>
+            </tr>
+            <tr>
+                <td><code>Table 'sentimentdb.app_user' doesn't exist</code></td>
+                <td>Tables should be auto-created by Hibernate (<code>ddl-auto: update</code>). If not, check that the MySQL user has CREATE TABLE privileges.</td>
+            </tr>
+            <tr>
+                <td>Application starts but uses H2</td>
+                <td>The <code>mysql</code> profile is not active. Verify with: check the logs for <code>H2</code> vs <code>MySQL</code> in datasource URL. Add <code>--spring.profiles.active=mysql</code>.</td>
+            </tr>
+            <tr>
+                <td>Dravidian characters show as <code>????</code></td>
+                <td>Database not using <code>utf8mb4</code>. Fix: <code>ALTER DATABASE sentimentdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;</code></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="callout callout-info">
+        <span class="callout-icon">&#9432;</span>
+        <div>To switch back to H2, simply run the application without the <code>mysql</code> profile: <code>java -jar sentiment-analysis.jar</code></div>
+    </div>
+</div>
+
+<!-- ==================== SUMMARY ==================== -->
+<div class="section">
+    <h2>Summary: What to Change</h2>
+    <p>Here's a quick checklist of everything needed to connect to MySQL:</p>
+    <table>
+        <thead><tr><th style="width:5%">#</th><th style="width:30%">What</th><th>Change</th><th style="width:15%">Required?</th></tr></thead>
+        <tbody>
+            <tr><td>1</td><td>Spring profile</td><td>Set <code>--spring.profiles.active=mysql</code> or <code>SPRING_PROFILES_ACTIVE=mysql</code></td><td><strong>Yes</strong></td></tr>
+            <tr><td>2</td><td>MySQL server</td><td>Must be running and accessible</td><td><strong>Yes</strong></td></tr>
+            <tr><td>3</td><td><code>DB_HOST</code></td><td>Set if MySQL is not on <code>localhost</code></td><td>If remote</td></tr>
+            <tr><td>4</td><td><code>DB_PORT</code></td><td>Set if MySQL is not on port <code>3306</code></td><td>If non-default</td></tr>
+            <tr><td>5</td><td><code>DB_NAME</code></td><td>Set if you want a different database name</td><td>Optional</td></tr>
+            <tr><td>6</td><td><code>DB_USERNAME</code></td><td>Set to your MySQL username</td><td>If not <code>root</code></td></tr>
+            <tr><td>7</td><td><code>DB_PASSWORD</code></td><td>Set to your MySQL password</td><td>If not <code>root</code></td></tr>
+        </tbody>
+    </table>
+
+    <div class="callout callout-tip">
+        <span class="callout-icon">&#10003;</span>
+        <div><strong>No code changes, no file edits, no additional dependencies needed.</strong> The <code>mysql</code> profile and environment variables handle everything.</div>
+    </div>
+</div>
+
+<!-- ==================== FOOTER ==================== -->
+<div class="doc-footer">
+    <p>Sentiment Analysis Application &#8212; MySQL Configuration Guide</p>
+    <p>Spring Boot 3.5.11 &bull; MySQL Connector/J &bull; HikariCP &bull; Hibernate / MySQLDialect</p>
+</div>
+
+</body>
+</html>

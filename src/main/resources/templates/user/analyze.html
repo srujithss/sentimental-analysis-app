@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Analyze')}"></head>
+<body>
+<nav th:replace="~{fragments/base :: userNav}"></nav>
+<main class="page">
+    <h1>Analyze sentiment</h1>
+    <p class="sub">Type or paste Malayalam, Tamil, Telugu or Kannada text. For text written in English letters, pick the language.</p>
+
+    <div th:unless="${modelReady}" class="alert error">
+        Please contact the administrator.
+    </div>
+
+    <section class="panel">
+        <textarea id="text" rows="5" maxlength="1000"
+                  placeholder="Type or paste text here..."></textarea>
+        <div class="row">
+            <span id="counter" class="muted-text">0 / 1000</span>
+            <span class="spacer"></span>
+            <select id="language" class="select" aria-label="Language">
+                <option value="">Auto-detect language</option>
+                <option value="ta">Tamil</option>
+                <option value="ml">Malayalam</option>
+                <option value="kn">Kannada</option>
+                <option value="te">Telugu</option>
+            </select>
+            <button id="analyzeBtn" type="button" class="btn small">Analyze</button>
+        </div>
+
+        <div class="examples">
+            <span class="muted-text">Try an example:</span>
+            <button type="button" class="chip-btn"
+                    data-text="ഈ സിനിമയുടെ കഥയും സംഗീതവും വളരെ മനോഹരമാണ്, എനിക്ക് ഒരുപാട് ഇഷ്ടപ്പെട്ടു.">Malayalam, positive</button>
+            <button type="button" class="chip-btn"
+                    data-text="ഈ ഹോട്ടലിലെ ഭക്ഷണം വളരെ മോശമായിരുന്നു, പണമെല്ലാം വെറുതെ പാഴായി.">Malayalam, negative</button>
+            <button type="button" class="chip-btn"
+                    data-text="ഈ ബസ് തിരുവനന്തപുരം സെൻട്രൽ ബസ് സ്റ്റേഷനിലേക്ക് പോകുന്നതാണ്.">Malayalam, neutral</button>
+            <button type="button" class="chip-btn"
+                    data-text="Ithu valare nalla chithram aanu" data-lang="ta">Malayalam (romanized)</button>
+        </div>
+    </section>
+
+    <div id="error" class="alert error hidden"></div>
+
+    <section id="result" class="panel hidden" aria-live="polite">
+        <div id="translit-box" class="translit-box hidden">
+            <span class="translit-label">Transliterated text:</span>
+            <span id="translit-text" class="translit-text"></span>
+        </div>
+        <div class="result-head">
+            <span id="label" class="label-badge">-</span>
+            <span id="confidence" class="confidence"></span>
+        </div>
+        <div id="bars" class="bars"></div>
+        <div class="meta">
+            <span id="lang" class="chip"></span>
+            <span id="codemix" class="chip warn hidden">Code-mixed text</span>
+            <span id="lowconf" class="chip warn hidden">Low confidence: treat with care</span>
+            <span id="latency" class="chip"></span>
+        </div>
+    </section>
+</main>
+<script th:src="@{/js/user/analyze.js}" defer></script>
+</body>
+</html>

@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Manual — Sentiment Analysis</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --card-bg: #f8fafc;
+            --accent: #2563eb;
+            --accent-light: #eff6ff;
+            --green: #059669;
+            --green-bg: #ecfef5;
+            --red: #dc2626;
+            --red-bg: #fef2f2;
+            --amber: #d97706;
+            --amber-bg: #fffbeb;
+            --purple: #7c3aed;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            padding: 40px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .doc-header {
+            text-align: center;
+            margin-bottom: 48px;
+            padding-bottom: 32px;
+            border-bottom: 2px solid var(--border);
+        }
+        .doc-header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        .doc-header .app-name {
+            color: var(--accent);
+        }
+        .doc-header p {
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        /* TOC */
+        .toc {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px 28px;
+            margin-bottom: 40px;
+        }
+        .toc h2 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .toc ol { padding-left: 20px; }
+        .toc li { padding: 3px 0; font-size: 14px; }
+        .toc a { color: var(--accent); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+
+        /* Sections */
+        .section { margin-bottom: 48px; }
+        h2 { font-size: 22px; font-weight: 700; margin-bottom: 16px; padding-top: 8px; }
+        h3 { font-size: 17px; font-weight: 600; margin: 20px 0 10px; color: var(--text); }
+        p { margin-bottom: 12px; font-size: 15px; }
+
+        /* Steps */
+        .steps { list-style: none; padding: 0; counter-reset: step; }
+        .steps li {
+            counter-increment: step;
+            position: relative;
+            padding: 16px 20px 16px 64px;
+            margin-bottom: 12px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .steps li::before {
+            content: counter(step);
+            position: absolute; left: 18px; top: 14px;
+            width: 30px; height: 30px;
+            background: var(--accent); color: #fff;
+            font-weight: 700; font-size: 14px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .steps li strong { display: block; font-size: 15px; margin-bottom: 4px; }
+
+        /* Callout boxes */
+        .callout {
+            border-radius: 8px; padding: 14px 18px; margin: 16px 0;
+            font-size: 14px; display: flex; gap: 10px; align-items: flex-start;
+        }
+        .callout-icon { font-size: 18px; flex-shrink: 0; line-height: 1.4; }
+        .callout-tip { background: var(--green-bg); border: 1px solid #a7f3d0; }
+        .callout-warn { background: var(--amber-bg); border: 1px solid #fde68a; }
+        .callout-info { background: var(--accent-light); border: 1px solid #bfdbfe; }
+
+        /* Code / kbd */
+        code {
+            background: #f1f5f9; padding: 2px 6px; border-radius: 4px;
+            font-size: 13px; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+        }
+        kbd {
+            background: #f1f5f9; border: 1px solid #d1d5db; border-bottom-width: 2px;
+            padding: 2px 7px; border-radius: 4px; font-size: 12px;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+        }
+
+        /* Screenshots */
+        .screenshot {
+            border: 1px solid var(--border); border-radius: 8px;
+            overflow: hidden; margin: 16px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .screenshot img {
+            display: block; width: 100%; height: auto;
+        }
+        .screenshot-caption {
+            text-align: center; font-size: 12px; color: var(--muted);
+            padding: 8px; background: var(--card-bg);
+            border-top: 1px solid var(--border);
+        }
+
+        /* Feature grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px; margin: 16px 0;
+        }
+        .feature-card {
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 8px; padding: 16px;
+        }
+        .feature-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+        .feature-card p { font-size: 13px; color: var(--muted); margin: 0; }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+        th {
+            text-align: left; padding: 10px 14px; background: var(--card-bg);
+            border-bottom: 2px solid var(--border); font-size: 12px;
+            font-weight: 600; text-transform: uppercase; color: var(--muted);
+        }
+        td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+
+        /* Sentiment badges */
+        .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; }
+        .badge-pos { background: #dcfce7; color: #166534; }
+        .badge-neg { background: #fee2e2; color: #991b1b; }
+        .badge-neu { background: #f3f4f6; color: #374151; }
+
+        /* Model info card */
+        .model-card {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-radius: 12px; padding: 24px 28px; margin: 16px 0; color: #e2e8f0;
+        }
+        .model-card h3 { color: #fff; margin: 0 0 12px; font-size: 16px; }
+        .model-card table { margin: 0; }
+        .model-card th { background: transparent; color: #94a3b8; border-color: #475569; padding: 6px 14px; }
+        .model-card td { color: #e2e8f0; border-color: #475569; padding: 6px 14px; }
+        .model-card code { background: #475569; color: #7dd3fc; }
+
+        /* Footer */
+        .doc-footer {
+            margin-top: 48px; padding-top: 24px;
+            border-top: 1px solid var(--border);
+            font-size: 12px; color: var(--muted); text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ==================== HEADER ==================== -->
+<div class="doc-header">
+    <h1><span class="app-name">Sentiment Analysis</span> &#8212; User Manual</h1>
+    <p>Cross-lingual sentiment analysis for Dravidian languages (Tamil, Malayalam, Kannada, Telugu)</p>
+    <p style="margin-top:4px;font-size:13px;color:#94a3b8;">Application URL: <code>http://localhost:8080</code></p>
+</div>
+
+<!-- ==================== TABLE OF CONTENTS ==================== -->
+<nav class="toc">
+    <h2>Table of Contents</h2>
+    <ol>
+        <li><a href="#overview">Application Overview</a></li>
+        <li><a href="#model">Model Information</a></li>
+        <li><a href="#getting-started">Getting Started</a></li>
+        <li><a href="#registration">Registration</a></li>
+        <li><a href="#login">Login</a></li>
+        <li><a href="#dashboard">User Dashboard</a></li>
+        <li><a href="#analyze">Analyzing Sentiment</a></li>
+        <li><a href="#transliteration">Transliteration (Romanized Text)</a></li>
+        <li><a href="#results">Understanding Results</a></li>
+        <li><a href="#history">Analysis History</a></li>
+        <li><a href="#languages">Supported Languages</a></li>
+        <li><a href="#admin">Admin Dashboard</a></li>
+        <li><a href="#shortcuts">Keyboard Shortcuts &amp; Tips</a></li>
+        <li><a href="#troubleshooting">Troubleshooting</a></li>
+    </ol>
+</nav>
+
+<!-- ==================== 1. OVERVIEW ==================== -->
+<div class="section" id="overview">
+    <h2>1. Application Overview</h2>
+    <p>
+        The Sentiment Analysis application determines whether a piece of text expresses a
+        <span class="badge badge-pos">Positive</span>,
+        <span class="badge badge-neg">Negative</span>, or
+        <span class="badge badge-neu">Neutral</span>
+        sentiment. It is powered by the <strong>XLM-RoBERTa</strong> multilingual transformer model, trained specifically for Dravidian languages, and works with text written in
+        native script <strong>or</strong> in romanized (English-letter) form.
+    </p>
+
+    <div class="feature-grid">
+        <div class="feature-card">
+            <h4>Multi-language Support</h4>
+            <p>Tamil, Malayalam, Kannada, and Telugu in both native script and romanized Latin text.</p>
+        </div>
+        <div class="feature-card">
+            <h4>Auto Transliteration</h4>
+            <p>Romanized text is automatically converted to native script via ICU4J for higher accuracy.</p>
+        </div>
+        <div class="feature-card">
+            <h4>Confidence Score</h4>
+            <p>Every result shows a confidence percentage and per-class probability breakdown.</p>
+        </div>
+        <div class="feature-card">
+            <h4>Analysis History</h4>
+            <p>All your analyses are saved and can be browsed, filtered by language, and paginated.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== 2. MODEL INFORMATION ==================== -->
+<div class="section" id="model">
+    <h2>2. Model Information</h2>
+    <p>The application uses a pre-trained multilingual transformer model, exported to ONNX format for fast inference inside the JVM.</p>
+
+    <div class="model-card">
+        <h3>Sentiment Model Details</h3>
+        <table>
+            <tbody>
+                <tr><th>Model Name</th><td><code>cardiffnlp/twitter-xlm-roberta-base-sentiment</code></td></tr>
+                <tr><th>Architecture</th><td>XLMRobertaForSequenceClassification</td></tr>
+                <tr><th>Base Model</th><td>XLM-RoBERTa Base (multilingual, 100+ languages)</td></tr>
+                <tr><th>Hidden Layers</th><td>12 transformer layers, 768 hidden units</td></tr>
+                <tr><th>Output Labels</th><td><span class="badge badge-neg" style="background:#7f1d1d;color:#fca5a5">Negative</span> &nbsp; <span class="badge badge-neu" style="background:#374151;color:#d1d5db">Neutral</span> &nbsp; <span class="badge badge-pos" style="background:#14532d;color:#86efac">Positive</span></td></tr>
+                <tr><th>Inference Engine</th><td>DJL (Deep Java Library) 0.36.0 + ONNX Runtime</td></tr>
+                <tr><th>Transliteration</th><td>ICU4J 75.1 (Latin &#8594; Tamil / Telugu / Kannada / Malayalam)</td></tr>
+                <tr><th>Max Input Length</th><td>256 tokens</td></tr>
+                <tr><th>Low Confidence Threshold</th><td>60% (results below this are flagged)</td></tr>
+                <tr><th>Model Path</th><td><code>./models/xlmr-sentiment</code></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout callout-info">
+        <span class="callout-icon">&#9432;</span>
+        <div>The model is originally from <strong>Hugging Face</strong> (<code>cardiffnlp/twitter-xlm-roberta-base-sentiment</code>), fine-tuned on multilingual Twitter data. It is exported to ONNX format via the <code>python/export_model.py</code> script and runs entirely inside the JVM &#8212; no Python or GPU is needed at runtime.</div>
+    </div>
+</div>
+
+<!-- ==================== 3. GETTING STARTED ==================== -->
+<div class="section" id="getting-started">
+    <h2>3. Getting Started</h2>
+    <p>Before using the application, ensure the following prerequisites are met:</p>
+
+    <table>
+        <thead><tr><th>Requirement</th><th>Details</th></tr></thead>
+        <tbody>
+            <tr><td>Web browser</td><td>Any modern browser (Chrome, Safari, Firefox, Edge)</td></tr>
+            <tr><td>Application URL</td><td><code>http://localhost:8080</code> (default, or the URL provided by your administrator)</td></tr>
+            <tr><td>Account</td><td>Register a new account or use credentials provided to you</td></tr>
+        </tbody>
+    </table>
+
+    <div class="callout callout-info">
+        <span class="callout-icon">&#9432;</span>
+        <div>The application uses role-based access. Regular users access the <strong>User area</strong> (<code>/user/*</code>). Administrators access the <strong>Admin area</strong> (<code>/admin/*</code>). Each role can only see its own pages.</div>
+    </div>
+</div>
+
+<!-- ==================== 4. REGISTRATION ==================== -->
+<div class="section" id="registration">
+    <h2>4. Registration</h2>
+
+    <div class="screenshot">
+        <img src="screenshots/02-register.png" alt="Registration page">
+        <div class="screenshot-caption">Registration page &#8212; <code>/register</code></div>
+    </div>
+
+    <ol class="steps">
+        <li>
+            <strong>Open the Registration page</strong>
+            Navigate to <code>http://localhost:8080/register</code> or click "Register" on the login page.
+        </li>
+        <li>
+            <strong>Fill in your details</strong>
+            <br><strong>Username</strong> &#8212; must be unique, max 30 characters.
+            <br><strong>Email</strong> &#8212; must be a valid, unique email address.
+            <br><strong>Password</strong> &#8212; minimum 8 characters.
+            <br><strong>Confirm password</strong> &#8212; must match the password.
+        </li>
+        <li>
+            <strong>Click "Register"</strong>
+            On success, you are redirected to the login page with a confirmation message.
+        </li>
+    </ol>
+
+    <div class="callout callout-warn">
+        <span class="callout-icon">&#9888;</span>
+        <div>If you see a validation error (red text below a field), correct the highlighted field and try again. Common issues: username already taken, email already registered, or passwords don't match.</div>
+    </div>
+</div>
+
+<!-- ==================== 5. LOGIN ==================== -->
+<div class="section" id="login">
+    <h2>5. Login</h2>
+
+    <div class="screenshot">
+        <img src="screenshots/01-login.png" alt="Login page">
+        <div class="screenshot-caption">Login page &#8212; <code>/login</code></div>
+    </div>
+
+    <ol class="steps">
+        <li>
+            <strong>Open the Login page</strong>
+            Navigate to <code>http://localhost:8080/login</code>. Any unauthenticated URL automatically redirects here.
+        </li>
+        <li>
+            <strong>Enter your credentials</strong>
+            Type the username and password you registered with.
+        </li>
+        <li>
+            <strong>Click "Sign in"</strong>
+            On success, you are redirected to your <strong>User Dashboard</strong>.
+        </li>
+    </ol>
+
+    <div class="callout callout-tip">
+        <span class="callout-icon">&#10003;</span>
+        <div>After successful registration, you'll see a green banner: <em>"Account created. Please sign in."</em></div>
+    </div>
+</div>
+
+<!-- ==================== 6. DASHBOARD ==================== -->
+<div class="section" id="dashboard">
+    <h2>6. User Dashboard</h2>
+
+    <div class="screenshot">
+        <img src="screenshots/03-dashboard.png" alt="User Dashboard">
+        <div class="screenshot-caption">User Dashboard &#8212; <code>/user/dashboard</code></div>
+    </div>
+
+    <p>The dashboard is your landing page after login. It provides quick links to:</p>
+    <ul style="padding-left:24px;margin-bottom:12px;font-size:14px;">
+        <li><strong>Analyze text</strong> &#8212; opens the Analyze page to run sentiment analysis</li>
+        <li><strong>My history</strong> &#8212; shows how many analyses you've run and links to the full History page</li>
+    </ul>
+
+    <h3>Navigation Bar</h3>
+    <p>The top navigation bar is visible on every user page and includes:</p>
+    <table>
+        <thead><tr><th>Item</th><th>Action</th></tr></thead>
+        <tbody>
+            <tr><td><strong>Sentiment</strong> (brand)</td><td>Returns to the Dashboard</td></tr>
+            <tr><td><strong>Dashboard</strong></td><td>Opens the Dashboard</td></tr>
+            <tr><td><strong>Analyze</strong></td><td>Opens the Analyze page</td></tr>
+            <tr><td><strong>History</strong></td><td>Opens the History page</td></tr>
+            <tr><td><strong>Avatar icon</strong> (top-right)</td><td>Shows your username and a <strong>Logout</strong> button</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ==================== 7. ANALYZING SENTIMENT ==================== -->
+<div class="section" id="analyze">
+    <h2>7. Analyzing Sentiment</h2>
+
+    <div class="screenshot">
+        <img src="screenshots/04-analyze-empty.png" alt="Analyze page (empty)">
+        <div class="screenshot-caption">Analyze page &#8212; <code>/user/analyze</code></div>
+    </div>
+
+    <ol class="steps">
+        <li>
+            <strong>Navigate to the Analyze page</strong>
+            Click <strong>Analyze</strong> in the nav bar, or click the "Analyze text" tile on the Dashboard.
+        </li>
+        <li>
+            <strong>Enter your text</strong>
+            Type or paste text into the text area (up to 1,000 characters). The character counter updates in real time.
+        </li>
+        <li>
+            <strong>Select a language (if needed)</strong>
+            <br>&#8226; <strong>Native script</strong> (e.g., &#3374;&#3378;&#3375;&#3390;&#3379;&#3330;): leave the dropdown on <em>"Auto-detect language"</em>.
+            <br>&#8226; <strong>Romanized text</strong> (e.g., "Ee cinema valare nallathanu"): select the correct language (Tamil, Malayalam, Kannada, or Telugu) from the dropdown. This enables automatic transliteration.
+        </li>
+        <li>
+            <strong>Click "Analyze" (or press <kbd>Ctrl</kbd>+<kbd>Enter</kbd>)</strong>
+            The button changes to "Analyzing..." while processing.
+        </li>
+        <li>
+            <strong>View the result</strong>
+            The result panel appears below with the sentiment label, confidence score, probability bars, detected language, and latency.
+        </li>
+    </ol>
+
+    <h3>Native Script Analysis</h3>
+    <div class="screenshot">
+        <img src="screenshots/05-analyze-native.png" alt="Native Malayalam text analysis showing Positive result">
+        <div class="screenshot-caption">Analysis of native Malayalam text &#8212; <span class="badge badge-pos">Positive</span> sentiment</div>
+    </div>
+
+    <h3>Negative Sentiment Example</h3>
+    <div class="screenshot">
+        <img src="screenshots/07-analyze-negative.png" alt="Negative sentiment analysis result">
+        <div class="screenshot-caption">Analysis of negative Malayalam text &#8212; <span class="badge badge-neg">Negative</span> sentiment</div>
+    </div>
+
+    <h3>Example Chips</h3>
+    <p>Below the text area, pre-loaded example buttons let you quickly test the system. Clicking a chip fills the text area and (for romanized examples) selects the language automatically.</p>
+</div>
+
+<!-- ==================== 8. TRANSLITERATION ==================== -->
+<div class="section" id="transliteration">
+    <h2>8. Transliteration (Romanized Text)</h2>
+
+    <p>
+        When you type Dravidian text using English letters (romanized / Latin script), the model's accuracy drops significantly (from ~100% to ~20%).
+        The application solves this by <strong>automatically transliterating</strong> your romanized text into native script before analysis using the <strong>ICU4J</strong> library.
+    </p>
+
+    <div class="screenshot">
+        <img src="screenshots/06-analyze-transliterated.png" alt="Transliterated romanized text analysis">
+        <div class="screenshot-caption">Romanized text "Ee cinema valare nallathanu" transliterated to Malayalam script &#8212; <span class="badge badge-pos">Positive</span> sentiment</div>
+    </div>
+
+    <h3>How it works</h3>
+    <ol class="steps">
+        <li>
+            <strong>You type romanized text</strong>
+            Example: <code>Ee cinema valare nallathanu</code>
+        </li>
+        <li>
+            <strong>You select the language</strong>
+            Choose "Malayalam" from the language dropdown (required for romanized text).
+        </li>
+        <li>
+            <strong>The system detects Latin script</strong>
+            It recognizes the input is in English letters, not native script.
+        </li>
+        <li>
+            <strong>Automatic transliteration</strong>
+            The text is converted to native Malayalam script (shown in the blue box above the result).
+        </li>
+        <li>
+            <strong>Analysis runs on native script</strong>
+            The XLM-RoBERTa model processes the transliterated text, producing much higher accuracy.
+        </li>
+    </ol>
+
+    <div class="callout callout-info">
+        <span class="callout-icon">&#9432;</span>
+        <div>The transliterated text is displayed in a blue box above the result so you can verify the conversion. If you're already typing in native script, no transliteration occurs.</div>
+    </div>
+
+    <div class="callout callout-warn">
+        <span class="callout-icon">&#9888;</span>
+        <div><strong>Important:</strong> You must select the correct language from the dropdown when entering romanized text. Without it, the system cannot determine which script to transliterate into, and accuracy will be low (~20%).</div>
+    </div>
+</div>
+
+<!-- ==================== 9. UNDERSTANDING RESULTS ==================== -->
+<div class="section" id="results">
+    <h2>9. Understanding Results</h2>
+
+    <p>After analysis, the result panel displays several pieces of information:</p>
+
+    <table>
+        <thead><tr><th style="width:25%">Element</th><th>Description</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><strong>Sentiment Label</strong></td>
+                <td>
+                    The predicted sentiment:
+                    <span class="badge badge-pos">Positive</span>,
+                    <span class="badge badge-neg">Negative</span>, or
+                    <span class="badge badge-neu">Neutral</span>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Confidence Score</strong></td>
+                <td>How confident the model is in its prediction (0%&#8211;100%). Higher is more reliable.</td>
+            </tr>
+            <tr>
+                <td><strong>Probability Bars</strong></td>
+                <td>Visual breakdown showing the probability for each of the three sentiment classes. The longest bar corresponds to the predicted label.</td>
+            </tr>
+            <tr>
+                <td><strong>Language &amp; Script</strong></td>
+                <td>The detected (or selected) language and script type, e.g., "Malayalam (Malayalam script)" or "Malayalam (Latin script)".</td>
+            </tr>
+            <tr>
+                <td><strong>Transliterated Text</strong></td>
+                <td>Shown only for romanized input &#8212; the native-script version the model actually analyzed (blue box).</td>
+            </tr>
+            <tr>
+                <td><strong>Latency</strong></td>
+                <td>Time taken for the model inference in milliseconds.</td>
+            </tr>
+            <tr>
+                <td><strong>Code-mixed</strong> <span style="color:var(--amber);">(warning)</span></td>
+                <td>Appears when the text contains multiple scripts (e.g., Malayalam mixed with English).</td>
+            </tr>
+            <tr>
+                <td><strong>Low confidence</strong> <span style="color:var(--amber);">(warning)</span></td>
+                <td>Appears when the confidence is below the threshold (default: 60%). Treat the result with caution.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ==================== 10. HISTORY ==================== -->
+<div class="section" id="history">
+    <h2>10. Analysis History</h2>
+
+    <div class="screenshot">
+        <img src="screenshots/08-history.png" alt="Analysis history page">
+        <div class="screenshot-caption">History page showing past analyses with pagination &#8212; <code>/user/history</code></div>
+    </div>
+
+    <p>The History page shows all your past analyses in a table, sorted newest first. Key features:</p>
+
+    <h3>Filtering by Language</h3>
+    <p>Use the dropdown at the top to filter by a specific language:</p>
+    <table>
+        <thead><tr><th>Filter Option</th><th>Shows</th></tr></thead>
+        <tbody>
+            <tr><td>All languages</td><td>Every analysis you've run</td></tr>
+            <tr><td>Tamil / Malayalam / Kannada / Telugu</td><td>Only analyses in the selected language</td></tr>
+            <tr><td>Not identified</td><td>Analyses where the language could not be detected</td></tr>
+        </tbody>
+    </table>
+
+    <h3>Pagination</h3>
+    <p>Results are displayed 10 per page. Use the <strong>Previous</strong> and <strong>Next</strong> buttons at the bottom to navigate between pages. The current page indicator (e.g., "Page 1 of 1 (3 total)") is shown in the center.</p>
+
+    <div class="callout callout-tip">
+        <span class="callout-icon">&#10003;</span>
+        <div>Your history is <strong>private</strong> &#8212; only you can see your own analyses. Other users cannot view your records.</div>
+    </div>
+</div>
+
+<!-- ==================== 11. SUPPORTED LANGUAGES ==================== -->
+<div class="section" id="languages">
+    <h2>11. Supported Languages</h2>
+
+    <table>
+        <thead><tr><th>Language</th><th>Code</th><th>Native Script</th><th>Romanized (Latin)</th><th>Transliteration</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><strong>Tamil</strong></td>
+                <td><code>ta</code></td>
+                <td>&#2980;&#2990;&#3007;&#2996;&#3021; (Tamil script)</td>
+                <td>"Indha padam romba nalla irukku"</td>
+                <td>Latin &#8594; Tamil</td>
+            </tr>
+            <tr>
+                <td><strong>Malayalam</strong></td>
+                <td><code>ml</code></td>
+                <td>&#3374;&#3378;&#3375;&#3390;&#3379;&#3330; (Malayalam script)</td>
+                <td>"Ee cinema valare nallathanu"</td>
+                <td>Latin &#8594; Malayalam</td>
+            </tr>
+            <tr>
+                <td><strong>Kannada</strong></td>
+                <td><code>kn</code></td>
+                <td>&#3221;&#3240;&#3277;&#3240;&#3233; (Kannada script)</td>
+                <td>"Ee cinema tumba chennagide"</td>
+                <td>Latin &#8594; Kannada</td>
+            </tr>
+            <tr>
+                <td><strong>Telugu</strong></td>
+                <td><code>te</code></td>
+                <td>&#3108;&#3142;&#3122;&#3137;&#3095;&#3137; (Telugu script)</td>
+                <td>"Ee cinema chala bagundi"</td>
+                <td>Latin &#8594; Telugu</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="callout callout-info">
+        <span class="callout-icon">&#9432;</span>
+        <div><strong>Auto-detect</strong> works best with native script. For romanized text, always select the language manually to enable transliteration and get accurate results.</div>
+    </div>
+</div>
+
+<!-- ==================== 12. ADMIN DASHBOARD ==================== -->
+<div class="section" id="admin">
+    <h2>12. Admin Dashboard</h2>
+
+    <p>The Admin Dashboard is accessible only to users with the <strong>ADMIN</strong> role. Regular users cannot access this area.</p>
+
+    <div class="screenshot">
+        <img src="screenshots/09-admin-dashboard.png" alt="Admin Dashboard">
+        <div class="screenshot-caption">Admin Dashboard &#8212; <code>/admin/dashboard</code></div>
+    </div>
+
+    <p>The Admin Dashboard shows:</p>
+    <ul style="padding-left:24px;margin-bottom:12px;font-size:14px;">
+        <li><strong>Total users</strong> &#8212; number of registered accounts</li>
+        <li><strong>Enabled accounts</strong> &#8212; number of active (non-disabled) accounts</li>
+        <li><strong>Sentiment model status</strong> &#8212; whether the ONNX model is loaded and ready, along with its file path</li>
+        <li><strong>Newest accounts table</strong> &#8212; recent registrations with username, email, role, creation date, and last login</li>
+    </ul>
+</div>
+
+<!-- ==================== 13. SHORTCUTS ==================== -->
+<div class="section" id="shortcuts">
+    <h2>13. Keyboard Shortcuts &amp; Tips</h2>
+
+    <table>
+        <thead><tr><th>Shortcut / Tip</th><th>Description</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><kbd>Ctrl</kbd> + <kbd>Enter</kbd> (or <kbd>&#8984;</kbd> + <kbd>Enter</kbd> on Mac)</td>
+                <td>Run analysis from the text area (same as clicking Analyze)</td>
+            </tr>
+            <tr>
+                <td><strong>Example chips</strong></td>
+                <td>Click any chip below the text area to auto-fill sample text</td>
+            </tr>
+            <tr>
+                <td><strong>Language memory</strong></td>
+                <td>The language dropdown remembers your last selection across visits</td>
+            </tr>
+            <tr>
+                <td><strong>Character limit</strong></td>
+                <td>Maximum 1,000 characters per analysis. The counter shows remaining capacity.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ==================== 14. TROUBLESHOOTING ==================== -->
+<div class="section" id="troubleshooting">
+    <h2>14. Troubleshooting</h2>
+
+    <table>
+        <thead><tr><th style="width:35%">Issue</th><th>Solution</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><em>"Please contact the administrator"</em> on the Analyze page</td>
+                <td>The sentiment model is not loaded. Contact your admin to check the model files at the configured path (<code>./models/xlmr-sentiment</code>).</td>
+            </tr>
+            <tr>
+                <td><em>"Invalid username or password"</em> at login</td>
+                <td>Double-check your username and password. Ensure your account hasn't been disabled by an admin.</td>
+            </tr>
+            <tr>
+                <td>Low confidence / wrong result on romanized text</td>
+                <td>Make sure you <strong>selected the correct language</strong> from the dropdown. Without it, transliteration won't activate and accuracy will be low (~20%).</td>
+            </tr>
+            <tr>
+                <td><em>"Unknown language"</em> error</td>
+                <td>You provided an unsupported language code. The system supports only Tamil (ta), Malayalam (ml), Kannada (kn), and Telugu (te).</td>
+            </tr>
+            <tr>
+                <td><em>"Please enter some text"</em> error</td>
+                <td>The text area is empty or contains only whitespace. Enter actual text before clicking Analyze.</td>
+            </tr>
+            <tr>
+                <td>Cannot access <code>/admin/dashboard</code></td>
+                <td>Only ADMIN-role accounts can access admin pages. Regular user accounts will see a 403 Forbidden error.</td>
+            </tr>
+            <tr>
+                <td>Page not loading / connection refused</td>
+                <td>Ensure the application is running and accessible at the correct URL (default: <code>http://localhost:8080</code>).</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ==================== FOOTER ==================== -->
+<div class="doc-footer">
+    <p>Sentiment Analysis Application &#8212; Cross-lingual Dravidian Language Sentiment Analyzer</p>
+    <p>Model: cardiffnlp/twitter-xlm-roberta-base-sentiment &bull; Spring Boot 3.5 &bull; Java 21 &bull; DJL / ONNX Runtime &bull; ICU4J 75.1</p>
+</div>
+
+</body>
+</html>

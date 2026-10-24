@@ -1,0 +1,192 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 920" font-family="system-ui, -apple-system, sans-serif" font-size="13">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#475569"/>
+    </marker>
+    <style>
+      .ext   { fill:#1e3a5f; stroke:#1e3a5f; }
+      .proc  { fill:#2563eb; stroke:#1d4ed8; }
+      .store { fill:#f8fafc; stroke:#334155; stroke-width:1.5; }
+      .label { fill:#fff; font-weight:600; font-size:13px; text-anchor:middle; }
+      .slabel{ fill:#334155; font-weight:600; font-size:12px; }
+      .flow  { fill:none; stroke:#475569; stroke-width:1.5; marker-end:url(#arrow); }
+      .ftxt  { fill:#475569; font-size:11px; }
+      .title { fill:#0f172a; font-size:22px; font-weight:700; }
+      .sub   { fill:#64748b; font-size:13px; }
+      .level { fill:#0f172a; font-size:16px; font-weight:700; }
+    </style>
+  </defs>
+
+  <!-- Title -->
+  <text x="550" y="35" text-anchor="middle" class="title">Data Flow Diagram &mdash; Sentiment Analysis Application</text>
+  <text x="550" y="55" text-anchor="middle" class="sub">Cross-lingual sentiment analysis for Dravidian languages</text>
+
+  <!-- ===== Level 0: Context Diagram ===== -->
+  <text x="30" y="90" class="level">Level 0 &mdash; Context Diagram</text>
+  <line x1="30" y1="96" x2="1070" y2="96" stroke="#cbd5e1" stroke-width="1"/>
+
+  <!-- External Entity: User -->
+  <rect x="60" y="160" width="140" height="50" rx="4" class="ext"/>
+  <text x="130" y="190" class="label">User</text>
+
+  <!-- Process: Sentiment System -->
+  <circle cx="550" cy="185" r="55" class="proc"/>
+  <text x="550" y="180" class="label">Sentiment</text>
+  <text x="550" y="196" class="label">Analysis</text>
+
+  <!-- External Entity: Admin -->
+  <rect x="900" y="160" width="140" height="50" rx="4" class="ext"/>
+  <text x="970" y="190" class="label">Admin</text>
+
+  <!-- Data Store: MySQL -->
+  <rect x="440" y="280" width="220" height="36" rx="4" class="store"/>
+  <line x1="466" y1="280" x2="466" y2="316" stroke="#334155" stroke-width="1.5"/>
+  <text x="480" y="303" class="slabel">D1  MySQL Database</text>
+
+  <!-- Flows -->
+  <line x1="200" y1="175" x2="492" y2="175" class="flow"/>
+  <text x="340" y="168" class="ftxt">Text + language selection</text>
+
+  <line x1="492" y1="195" x2="200" y2="195" class="flow"/>
+  <text x="340" y="216" class="ftxt">Sentiment result + transliterated text</text>
+
+  <line x1="605" y1="185" x2="898" y2="185" class="flow"/>
+  <text x="750" y="178" class="ftxt">System status &amp; stats</text>
+
+  <line x1="550" y1="240" x2="550" y2="278" class="flow"/>
+  <text x="570" y="262" class="ftxt">Read/Write</text>
+
+  <!-- ===== Level 1: Detailed DFD ===== -->
+  <text x="30" y="370" class="level">Level 1 &mdash; Detailed Data Flow Diagram</text>
+  <line x1="30" y1="376" x2="1070" y2="376" stroke="#cbd5e1" stroke-width="1"/>
+
+  <!-- External Entity: User (Level 1) -->
+  <rect x="30" y="520" width="120" height="50" rx="4" class="ext"/>
+  <text x="90" y="550" class="label">User</text>
+
+  <!-- P1: Authentication -->
+  <circle cx="250" cy="445" r="38" class="proc"/>
+  <text x="250" y="440" class="label" font-size="11">P1</text>
+  <text x="250" y="455" class="label" font-size="11">Auth</text>
+
+  <!-- P2: Preprocessing -->
+  <circle cx="420" cy="545" r="38" class="proc"/>
+  <text x="420" y="537" class="label" font-size="11">P2</text>
+  <text x="420" y="552" class="label" font-size="11">Preprocess</text>
+
+  <!-- P3: Language Detection -->
+  <circle cx="570" cy="445" r="38" class="proc"/>
+  <text x="570" y="437" class="label" font-size="11">P3</text>
+  <text x="570" y="452" class="label" font-size="10">Lang Detect</text>
+
+  <!-- P4: Transliteration -->
+  <circle cx="570" cy="640" r="38" class="proc"/>
+  <text x="570" y="632" class="label" font-size="11">P4</text>
+  <text x="570" y="647" class="label" font-size="10">Transliterate</text>
+
+  <!-- P5: Sentiment Inference -->
+  <circle cx="760" cy="545" r="42" class="proc"/>
+  <text x="760" y="537" class="label" font-size="11">P5</text>
+  <text x="760" y="552" class="label" font-size="10">Inference</text>
+
+  <!-- P6: Save Prediction -->
+  <circle cx="920" cy="640" r="38" class="proc"/>
+  <text x="920" y="632" class="label" font-size="11">P6</text>
+  <text x="920" y="647" class="label" font-size="10">Save Result</text>
+
+  <!-- External Entity: Admin (Level 1) -->
+  <rect x="880" y="420" width="120" height="50" rx="4" class="ext"/>
+  <text x="940" y="450" class="label">Admin</text>
+
+  <!-- Data Store: Users (D1) -->
+  <rect x="170" y="620" width="160" height="32" rx="4" class="store"/>
+  <line x1="195" y1="620" x2="195" y2="652" stroke="#334155" stroke-width="1.5"/>
+  <text x="208" y="641" class="slabel">D1  app_user</text>
+
+  <!-- Data Store: Predictions (D2) -->
+  <rect x="810" y="740" width="200" height="32" rx="4" class="store"/>
+  <line x1="838" y1="740" x2="838" y2="772" stroke="#334155" stroke-width="1.5"/>
+  <text x="852" y="761" class="slabel">D2  prediction_record</text>
+
+  <!-- Data Store: ONNX Model (D3) -->
+  <rect x="680" y="420" width="160" height="32" rx="4" class="store"/>
+  <line x1="706" y1="420" x2="706" y2="452" stroke="#334155" stroke-width="1.5"/>
+  <text x="718" y="441" class="slabel">D3  ONNX Model</text>
+
+  <!-- ---- Flows (Level 1) ---- -->
+
+  <!-- User → P1: credentials -->
+  <line x1="150" y1="530" x2="218" y2="470" class="flow"/>
+  <text x="155" y="490" class="ftxt">Credentials</text>
+
+  <!-- P1 → D1: validate -->
+  <line x1="250" y1="483" x2="250" y2="618" class="flow"/>
+  <text x="255" y="570" class="ftxt">Validate user</text>
+
+  <!-- User → P2: raw text + language -->
+  <line x1="150" y1="545" x2="380" y2="545" class="flow"/>
+  <text x="240" y="538" class="ftxt">Raw text + language</text>
+
+  <!-- P2 → P3: cleaned text -->
+  <line x1="450" y1="520" x2="540" y2="470" class="flow"/>
+  <text x="465" y="488" class="ftxt">Cleaned text</text>
+
+  <!-- P3 → P4: Latin-script detected + language code -->
+  <line x1="570" y1="483" x2="570" y2="600" class="flow"/>
+  <text x="580" y="555" class="ftxt">Latin script?</text>
+  <text x="580" y="568" class="ftxt">+ language code</text>
+
+  <!-- P4 → P5: native-script text -->
+  <line x1="608" y1="635" x2="725" y2="565" class="flow"/>
+  <text x="640" y="610" class="ftxt">Native-script text</text>
+
+  <!-- P3 → P5: already native text (bypass transliteration) -->
+  <path d="M 605 435 Q 680 400 740 510" class="flow"/>
+  <text x="660" y="470" class="ftxt">Native text</text>
+  <text x="660" y="483" class="ftxt">(no transliteration)</text>
+
+  <!-- D3 → P5: model weights -->
+  <line x1="760" y1="452" x2="760" y2="501" class="flow"/>
+  <text x="768" y="480" class="ftxt">Model</text>
+
+  <!-- P5 → User: result -->
+  <path d="M 718 555 Q 400 600 150 555" class="flow"/>
+  <text x="380" y="595" class="ftxt">Sentiment label + confidence + probabilities</text>
+
+  <!-- P5 → P6: result to save -->
+  <line x1="800" y1="560" x2="885" y2="630" class="flow"/>
+  <text x="820" y="600" class="ftxt">Result</text>
+
+  <!-- P6 → D2: persist -->
+  <line x1="920" y1="678" x2="920" y2="738" class="flow"/>
+  <text x="928" y="715" class="ftxt">Store prediction</text>
+
+  <!-- D2 → Admin: history/stats -->
+  <line x1="940" y1="740" x2="940" y2="472" class="flow"/>
+  <text x="950" y="700" class="ftxt">History &amp;</text>
+  <text x="950" y="713" class="ftxt">statistics</text>
+
+  <!-- P1 → User: session -->
+  <path d="M 215 460 Q 140 460 110 520" class="flow"/>
+  <text x="105" y="480" class="ftxt">Session</text>
+
+  <!-- Legend -->
+  <rect x="30" y="820" width="1040" height="80" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+  <text x="50" y="845" class="slabel" font-size="13">Legend:</text>
+
+  <rect x="120" y="832" width="50" height="24" rx="4" class="ext"/>
+  <text x="180" y="849" class="ftxt">External Entity</text>
+
+  <circle cx="310" cy="844" r="16" class="proc"/>
+  <text x="336" y="849" class="ftxt">Process</text>
+
+  <rect x="420" y="832" width="80" height="24" rx="4" class="store"/>
+  <line x1="440" y1="832" x2="440" y2="856" stroke="#334155" stroke-width="1.5"/>
+  <text x="510" y="849" class="ftxt">Data Store</text>
+
+  <line x1="620" y1="844" x2="680" y2="844" class="flow"/>
+  <text x="690" y="849" class="ftxt">Data Flow</text>
+
+  <text x="50" y="878" class="ftxt">P4 (Transliterate) is activated only when input is Latin-script and the user selects a Dravidian language (Tamil, Telugu, Kannada, Malayalam).</text>
+  <text x="50" y="893" class="ftxt">ddl-auto: update creates tables in MySQL automatically on first run if they do not already exist.</text>
+</svg>

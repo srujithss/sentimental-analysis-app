@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Speech bubble -->
+  <rect x="2" y="3" width="28" height="20" rx="4" fill="#2563eb"/>
+  <polygon points="8,23 14,23 10,29" fill="#2563eb"/>
+  <!-- Sentiment bars: negative (short), neutral (medium), positive (tall) -->
+  <rect x="7" y="15" width="4" height="5" rx="1" fill="#fca5a5" opacity="0.8"/>
+  <rect x="14" y="12" width="4" height="8" rx="1" fill="#fde68a" opacity="0.8"/>
+  <rect x="21" y="8" width="4" height="12" rx="1" fill="#86efac" opacity="0.9"/>
+</svg>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('My history')}"></head>
+<body>
+<nav th:replace="~{fragments/base :: userNav}"></nav>
+<main class="page">
+    <h1>My history</h1>
+    <p class="sub">Your previous analyses, newest first. Only you can see these.</p>
+
+    <div class="toolbar">
+        <select id="language" class="select" aria-label="Filter by language">
+            <option value="">All languages</option>
+            <option value="ta">Tamil</option>
+            <option value="ml">Malayalam</option>
+            <option value="kn">Kannada</option>
+            <option value="te">Telugu</option>
+            <option value="und">Not identified</option>
+        </select>
+    </div>
+
+    <div id="error" class="alert error hidden"></div>
+
+    <table class="table">
+        <thead>
+        <tr><th>When</th><th>Text</th><th>Result</th><th>Confidence</th><th>Language</th><th>Notes</th></tr>
+        </thead>
+        <tbody id="rows"></tbody>
+    </table>
+    <p id="empty" class="muted-text hidden">No analyses yet. Go to <a th:href="@{/user/analyze}">Analyze</a>.</p>
+    <p id="emptyFiltered" class="muted-text hidden">No analyses in this language.</p>
+
+    <div class="row pager">
+        <button id="prev" type="button" class="btn small ghost">Previous</button>
+        <span id="pageInfo" class="muted-text"></span>
+        <button id="next" type="button" class="btn small ghost">Next</button>
+    </div>
+</main>
+<script th:src="@{/js/user/history.js}" defer></script>
+</body>
+</html>

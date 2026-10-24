@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/base :: head('User dashboard')}"></head>
+<body>
+<nav th:replace="~{fragments/base :: userNav}"></nav>
+<main class="page">
+    <h1>Welcome, <span sec:authentication="name">user</span></h1>
+    <p class="sub">Analyze text in Tamil, Malayalam and other Dravidian languages.</p>
+
+    <div class="grid">
+        <a class="tile link" th:href="@{/user/analyze}">
+            <h3>Analyze text</h3>
+            <p>Get the sentiment of a sentence, with confidence.</p>
+        </a>
+        <a class="tile link" th:href="@{/user/history}">
+            <h3>My history</h3>
+            <p><strong th:text="${myAnalyses}">0</strong> analyses so far.</p>
+        </a>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: sentiment-analysis
+  datasource:
+    url: jdbc:h2:file:./data/sentimentdb;DB_CLOSE_DELAY=-1;AUTO_SERVER=TRUE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  thymeleaf:
+    cache: false
+
+server:
+  port: 8080
+
+app:
+  admin:
+    username: admin
+    email: admin@example.com
+    # Set ADMIN_PASSWORD as an environment variable; the fallback is for local dev only.
+    password: ${ADMIN_PASSWORD:Admin@12345}
+  model:
+    # Folder produced by python/export_model.py (model.onnx, tokenizer.json, config.json)
+    path: ./models/xlmr-sentiment
+    max-length: 256
+    low-confidence-threshold: 0.60
+    # Runs the 10 sample sentences at startup and logs the results
+    startup-check: true
+
+logging:
+  charset:
+    console: UTF-8

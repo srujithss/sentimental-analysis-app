@@ -1,0 +1,10 @@
+target/
+data/
+.idea/
+*.iml
+*.log
+models/
+.venv/
+python/.venv/
+__pycache__/
+.DS_Store

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Register')}"></head>
+<body class="auth">
+<main class="card">
+    <h1>Create account</h1>
+    <p class="sub">Registered accounts are regular users.</p>
+
+    <form th:action="@{/register}" th:object="${form}" method="post" novalidate>
+        <label>Username
+            <input type="text" th:field="*{username}" autocomplete="username">
+            <small class="err" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></small>
+        </label>
+        <label>Email
+            <input type="email" th:field="*{email}" autocomplete="email">
+            <small class="err" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+        </label>
+        <label>Password (min 8 characters)
+            <input type="password" th:field="*{password}" autocomplete="new-password">
+            <small class="err" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
+        </label>
+        <label>Confirm password
+            <input type="password" th:field="*{confirmPassword}" autocomplete="new-password">
+            <small class="err" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></small>
+        </label>
+        <button type="submit" class="btn">Register</button>
+    </form>
+
+    <p class="foot">Already registered? <a th:href="@{/login}">Sign in</a></p>
+</main>
+</body>
+</html>

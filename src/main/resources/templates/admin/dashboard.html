@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/base :: head('Admin overview')}"></head>
+<body>
+<nav th:replace="~{fragments/base :: adminNav}"></nav>
+<main class="page">
+    <h1>Admin overview</h1>
+    <p class="sub">Monitoring area. Prediction statistics and model health arrive in later phases.</p>
+
+    <div class="grid">
+        <section class="tile stat"><span class="num" th:text="${totalUsers}">0</span><span>Total users</span></section>
+        <section class="tile stat"><span class="num" th:text="${activeUsers}">0</span><span>Enabled accounts</span></section>
+        <section class="tile stat">
+            <span class="num" th:text="${modelReady} ? 'Ready' : 'Not loaded'">-</span>
+            <span>Sentiment model</span>
+            <small class="path" th:text="${modelPath}">-</small>
+        </section>
+    </div>
+
+    <h2>Newest accounts</h2>
+    <table class="table">
+        <thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Created</th><th>Last login</th></tr></thead>
+        <tbody>
+        <tr th:each="u : ${recentUsers}">
+            <td th:text="${u.username}">name</td>
+            <td th:text="${u.email}">mail</td>
+            <td th:text="${u.role}">USER</td>
+            <td th:text="${u.createdAt}">-</td>
+            <td th:text="${u.lastLoginAt != null} ? ${u.lastLoginAt} : '-'">-</td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

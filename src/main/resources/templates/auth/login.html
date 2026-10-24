@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Sign in')}"></head>
+<body class="auth">
+<main class="card">
+    <h1>Cross-Lingual Sentiment</h1>
+    <p class="sub">Sign in to continue</p>
+
+    <div th:if="${param.error}" class="alert error">Invalid username or password, or the account is disabled.</div>
+    <div th:if="${param.logout}" class="alert ok">You have been logged out.</div>
+    <div th:if="${param.registered}" class="alert ok">Account created. Please sign in.</div>
+
+    <form th:action="@{/login}" method="post">
+        <label>Username
+            <input type="text" name="username" required autofocus autocomplete="username">
+        </label>
+        <label>Password
+            <input type="password" name="password" required autocomplete="current-password">
+        </label>
+        <button type="submit" class="btn">Sign in</button>
+    </form>
+
+    <p class="foot">No account? <a th:href="@{/register}">Register</a></p>
+</main>
+</body>
+</html>

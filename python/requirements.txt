@@ -1,0 +1,16 @@
+# Libraries needed by export_model.py (installed with: pip install -r requirements.txt)
+#
+# optimum[onnx]  - Hugging Face "Optimum": provides the `optimum-cli export onnx` command that
+#                  converts a PyTorch model into the ONNX file format.
+# transformers   - Hugging Face library that downloads models/tokenizers and knows their config files.
+# torch          - PyTorch, the deep-learning library the original model is written in.
+#                  The exporter needs it to read the model's weights.
+# onnxruntime    - Microsoft's engine that runs .onnx files. Used here only to double-check the export.
+# numpy          - arrays and maths (softmax, argmax).
+# sentencepiece  - the text-splitting library (subword tokenization) XLM-R's tokenizer is built on.
+optimum[onnx]
+transformers
+torch
+onnxruntime
+numpy
+sentencepiece

@@ -1,0 +1,18 @@
+# expected<TAB>text[<TAB>language]   (lines starting with # are ignored; language is optional)
+positive	இந்த படம் மிகவும் அருமையாக இருந்தது, எனக்கு ரொம்ப பிடிச்சிருக்கு!
+positive	வாழ்த்துகள்! உங்கள் கடின உழைப்புக்கு கிடைத்த வெற்றி இது.
+positive	சூப்பர் அப்டேட்! இந்த அம்சம் ரொம்ப பயனுள்ளதாக இருக்கிறது.
+negative	தயவுசெய்து யாரும் இதை வாங்காதீங்க, பண விரயம் மட்டும் தான்.
+negative	ரொம்ப மோசமான அனுபவம், கஸ்டமர் சர்வீஸ் சுத்தமா சரியில்லை.
+negative	Nerathtgai veenadichuttaanga, indha kadhaiyil oru niyaayamum illai.
+neutral	Naalai kaalai 10 manikki indha nigazhchi thodangum.
+neutral	Adhutha pagudhi eppodhu veliyaagum endru solla mudiyuma?
+neutral	Indha mobile-in vilai matrum muzhu vivarangalai keezhe ulla link-il paarkkavum.
+neutral	Indru vaanilai megamoottathudan kaanapadum endru arivikkappattulladhu.
+# Romanized with language hint (transliterated to native script before analysis)
+negative	Nerathtgai veenadichuttaanga, indha kadhaiyil oru niyaayamum illai.	ta
+neutral	Naalai kaalai 10 manikki indha nigazhchi thodangum.	ta
+neutral	Adhutha pagudhi eppodhu veliyaagum endru solla mudiyuma?	ta
+neutral	Indha mobile-in vilai matrum muzhu vivarangalai keezhe ulla link-il paarkkavum.	ta
+neutral	Indru vaanilai megamoottathudan kaanapadum endru arivikkappattulladhu.	ta
+positive	indha padam romba nalla irukku	ta

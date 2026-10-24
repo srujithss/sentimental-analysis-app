@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Overview — Sentiment Analysis</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --card-bg: #f8fafc;
+            --accent: #2563eb;
+            --accent-light: #eff6ff;
+            --green: #059669;
+            --green-bg: #ecfef5;
+            --red: #dc2626;
+            --amber: #d97706;
+            --amber-bg: #fffbeb;
+            --purple: #7c3aed;
+            --purple-bg: #f5f3ff;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            padding: 40px 20px;
+            max-width: 920px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .doc-header {
+            text-align: center;
+            margin-bottom: 48px;
+            padding-bottom: 32px;
+            border-bottom: 2px solid var(--border);
+        }
+        .doc-header h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+        .doc-header .app-name { color: var(--accent); }
+        .doc-header p { color: var(--muted); font-size: 15px; }
+
+        /* TOC */
+        .toc {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px 28px;
+            margin-bottom: 40px;
+        }
+        .toc h2 {
+            font-size: 15px; font-weight: 700; margin-bottom: 10px;
+            color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .toc ol { padding-left: 20px; }
+        .toc li { padding: 3px 0; font-size: 14px; }
+        .toc a { color: var(--accent); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+
+        /* Sections */
+        .section { margin-bottom: 48px; }
+        h2 { font-size: 22px; font-weight: 700; margin-bottom: 16px; padding-top: 8px; }
+        h3 { font-size: 17px; font-weight: 600; margin: 20px 0 10px; }
+        p { margin-bottom: 12px; font-size: 15px; }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+        th {
+            text-align: left; padding: 10px 14px; background: var(--card-bg);
+            border-bottom: 2px solid var(--border); font-size: 12px;
+            font-weight: 600; text-transform: uppercase; color: var(--muted);
+        }
+        td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+
+        /* Code */
+        code {
+            background: #f1f5f9; padding: 2px 6px; border-radius: 4px;
+            font-size: 13px; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+        }
+        pre {
+            background: #1e293b; color: #e2e8f0; padding: 16px 20px;
+            border-radius: 8px; overflow-x: auto; margin: 12px 0;
+            font-size: 13px; line-height: 1.6;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+        }
+
+        /* Cards */
+        .stat-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px; margin: 16px 0;
+        }
+        .stat-card {
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 8px; padding: 16px; text-align: center;
+        }
+        .stat-card .stat-num { font-size: 28px; font-weight: 800; color: var(--accent); }
+        .stat-card .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+        .feature-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px; margin: 16px 0;
+        }
+        .feature-card {
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 8px; padding: 16px;
+        }
+        .feature-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+        .feature-card p { font-size: 13px; color: var(--muted); margin: 0; }
+
+        /* Callouts */
+        .callout {
+            border-radius: 8px; padding: 14px 18px; margin: 16px 0;
+            font-size: 14px; display: flex; gap: 10px; align-items: flex-start;
+        }
+        .callout-icon { font-size: 18px; flex-shrink: 0; line-height: 1.4; }
+        .callout-info { background: var(--accent-light); border: 1px solid #bfdbfe; }
+        .callout-tip { background: var(--green-bg); border: 1px solid #a7f3d0; }
+
+        /* Badges */
+        .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; }
+        .badge-blue { background: #dbeafe; color: #1e40af; }
+        .badge-green { background: #dcfce7; color: #166534; }
+        .badge-purple { background: #ede9fe; color: #5b21b6; }
+        .badge-amber { background: #fef3c7; color: #92400e; }
+
+        /* Model card */
+        .model-card {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-radius: 12px; padding: 24px 28px; margin: 16px 0; color: #e2e8f0;
+        }
+        .model-card h3 { color: #fff; margin: 0 0 12px; font-size: 16px; }
+        .model-card table { margin: 0; }
+        .model-card th { background: transparent; color: #94a3b8; border-color: #475569; padding: 6px 14px; }
+        .model-card td { color: #e2e8f0; border-color: #475569; padding: 6px 14px; }
+        .model-card code { background: #475569; color: #7dd3fc; }
+
+        /* Layer diagram */
+        .layer-diagram { margin: 20px 0; }
+        .layer {
+            padding: 14px 20px; border-radius: 8px; margin-bottom: 8px;
+            font-size: 14px; font-weight: 600; text-align: center; color: #fff;
+        }
+        .layer-arrow { text-align: center; color: var(--muted); font-size: 18px; margin: 4px 0; }
+        .layer-ui { background: #2563eb; }
+        .layer-ctrl { background: #7c3aed; }
+        .layer-svc { background: #059669; }
+        .layer-repo { background: #d97706; }
+        .layer-db { background: #64748b; }
+        .layer-sub { font-weight: 400; font-size: 12px; opacity: 0.85; }
+
+        /* Tree */
+        .tree { font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 13px; line-height: 1.8; }
+        .tree ul { list-style: none; padding-left: 20px; }
+        .tree > ul { padding-left: 0; }
+        .tree li::before { content: ""; }
+        .tree .folder { color: var(--accent); font-weight: 600; }
+        .tree .file { color: var(--muted); }
+
+        /* Footer */
+        .doc-footer {
+            margin-top: 48px; padding-top: 24px;
+            border-top: 1px solid var(--border);
+            font-size: 12px; color: var(--muted); text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ==================== HEADER ==================== -->
+<div class="doc-header">
+    <h1><span class="app-name">Sentiment Analysis</span> &#8212; Project Overview</h1>
+    <p>Cross-lingual sentiment analysis for Dravidian languages</p>
+    <p style="margin-top:4px;font-size:13px;color:#94a3b8;">
+        <code>com.sentiment:sentiment-analysis:0.0.1-SNAPSHOT</code>
+    </p>
+</div>
+
+<!-- ==================== TOC ==================== -->
+<nav class="toc">
+    <h2>Table of Contents</h2>
+    <ol>
+        <li><a href="#introduction">Introduction</a></li>
+        <li><a href="#stats">Project at a Glance</a></li>
+        <li><a href="#tech-stack">Technology Stack</a></li>
+        <li><a href="#model">ML Model</a></li>
+        <li><a href="#architecture">Architecture</a></li>
+        <li><a href="#project-structure">Project Structure</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#security">Security</a></li>
+        <li><a href="#database">Database</a></li>
+        <li><a href="#api">API Endpoints</a></li>
+        <li><a href="#testing">Testing</a></li>
+        <li><a href="#configuration">Configuration</a></li>
+        <li><a href="#running">Building &amp; Running</a></li>
+    </ol>
+</nav>
+
+<!-- ==================== 1. INTRODUCTION ==================== -->
+<div class="section" id="introduction">
+    <h2>1. Introduction</h2>
+    <p>
+        The <strong>Sentiment Analysis</strong> application is a full-stack web application that determines whether text
+        expresses a <strong>positive</strong>, <strong>negative</strong>, or <strong>neutral</strong> sentiment. It is designed
+        specifically for <strong>Dravidian languages</strong> &#8212; Tamil, Malayalam, Kannada, and Telugu &#8212;
+        and supports both native script and romanized (Latin-letter) input.
+    </p>
+    <p>
+        The system uses a pre-trained <strong>XLM-RoBERTa</strong> transformer model running entirely inside the JVM via
+        ONNX Runtime, requiring no external Python service or GPU at runtime. Romanized text is automatically transliterated
+        to native script using the <strong>ICU4J</strong> library before inference, dramatically improving accuracy for
+        Latin-script input.
+    </p>
+</div>
+
+<!-- ==================== 2. PROJECT AT A GLANCE ==================== -->
+<div class="section" id="stats">
+    <h2>2. Project at a Glance</h2>
+
+    <div class="stat-grid">
+        <div class="stat-card">
+            <div class="stat-num">38</div>
+            <div class="stat-label">Java Source Files</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num">7</div>
+            <div class="stat-label">Test Classes</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num">44</div>
+            <div class="stat-label">Test Cases</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num">~5,000</div>
+            <div class="stat-label">Lines of Java</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num">4</div>
+            <div class="stat-label">Languages Supported</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num">6</div>
+            <div class="stat-label">HTML Templates</div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== 3. TECHNOLOGY STACK ==================== -->
+<div class="section" id="tech-stack">
+    <h2>3. Technology Stack</h2>
+
+    <table>
+        <thead><tr><th>Category</th><th>Technology</th><th>Version</th></tr></thead>
+        <tbody>
+            <tr><td><strong>Language</strong></td><td>Java</td><td>21</td></tr>
+            <tr><td><strong>Framework</strong></td><td>Spring Boot</td><td>3.5.11</td></tr>
+            <tr><td><strong>Build Tool</strong></td><td>Maven</td><td>3.x (wrapper included)</td></tr>
+            <tr><td><strong>Web / MVC</strong></td><td>Spring Web + Thymeleaf</td><td>&#8212;</td></tr>
+            <tr><td><strong>Security</strong></td><td>Spring Security 6</td><td>&#8212;</td></tr>
+            <tr><td><strong>ORM</strong></td><td>Spring Data JPA / Hibernate</td><td>&#8212;</td></tr>
+            <tr><td><strong>Default Database</strong></td><td>H2 (file-based)</td><td>&#8212;</td></tr>
+            <tr><td><strong>Optional Database</strong></td><td>MySQL (via <code>mysql</code> profile)</td><td>&#8212;</td></tr>
+            <tr><td><strong>ML Inference</strong></td><td>DJL (Deep Java Library) + ONNX Runtime</td><td>0.36.0</td></tr>
+            <tr><td><strong>Transliteration</strong></td><td>ICU4J</td><td>75.1</td></tr>
+            <tr><td><strong>Validation</strong></td><td>Jakarta Bean Validation</td><td>&#8212;</td></tr>
+            <tr><td><strong>Frontend</strong></td><td>Vanilla HTML/CSS/JS (no framework)</td><td>&#8212;</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ==================== 4. ML MODEL ==================== -->
+<div class="section" id="model">
+    <h2>4. ML Model</h2>
+
+    <div class="model-card">
+        <h3>Sentiment Model Details</h3>
+        <table>
+            <tbody>
+                <tr><th>Model Name</th><td><code>cardiffnlp/twitter-xlm-roberta-base-sentiment</code></td></tr>
+                <tr><th>Architecture</th><td>XLMRobertaForSequenceClassification</td></tr>
+                <tr><th>Base Model</th><td>XLM-RoBERTa Base (multilingual, 100+ languages)</td></tr>
+                <tr><th>Layers</th><td>12 transformer layers, 768 hidden units, 12 attention heads</td></tr>
+                <tr><th>Output Labels</th><td>Negative (0) &bull; Neutral (1) &bull; Positive (2)</td></tr>
+                <tr><th>Runtime Format</th><td>ONNX (exported via <code>python/export_model.py</code>)</td></tr>
+                <tr><th>Inference Engine</th><td>DJL 0.36.0 + ONNX Runtime (CPU)</td></tr>
+                <tr><th>Max Sequence Length</th><td>256 tokens</td></tr>
+                <tr><th>Low Confidence Threshold</th><td>60%</td></tr>
+                <tr><th>Model Location</th><td><code>./models/xlmr-sentiment/</code></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Inference Pipeline</h3>
+    <p>The end-to-end prediction pipeline works as follows:</p>
+    <table>
+        <thead><tr><th>Step</th><th>Component</th><th>Action</th></tr></thead>
+        <tbody>
+            <tr><td>1</td><td><code>PreprocessingService</code></td><td>Cleans and normalizes input text</td></tr>
+            <tr><td>2</td><td><code>LanguageDetectionService</code></td><td>Detects the language and script type (native vs. Latin)</td></tr>
+            <tr><td>3</td><td><code>TransliterationService</code></td><td>If Latin script detected, transliterates to native script via ICU4J</td></tr>
+            <tr><td>4</td><td><code>SentimentTranslator</code></td><td>Tokenizes text with XLM-RoBERTa tokenizer</td></tr>
+            <tr><td>5</td><td><code>DjlSentimentService</code></td><td>Runs ONNX model inference, returns softmax probabilities</td></tr>
+            <tr><td>6</td><td><code>PredictionService</code></td><td>Orchestrates the pipeline, saves result to database</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ==================== 5. ARCHITECTURE ==================== -->
+<div class="section" id="architecture">
+    <h2>5. Architecture</h2>
+
+    <p>The application follows a <strong>layered architecture</strong> pattern typical of Spring Boot applications:</p>
+
+    <div class="layer-diagram">
+        <div class="layer layer-ui">Presentation Layer <div class="layer-sub">Thymeleaf templates + static CSS/JS</div></div>
+        <div class="layer-arrow">&#9660;</div>
+        <div class="layer layer-ctrl">Controller Layer <div class="layer-sub">AuthController, UserPagesController, AdminDashboardController, SentimentApiController</div></div>
+        <div class="layer-arrow">&#9660;</div>
+        <div class="layer layer-svc">Service Layer <div class="layer-sub">PredictionService, DjlSentimentService, TransliterationService, LanguageDetectionService, PreprocessingService, UserAccountService</div></div>
+        <div class="layer-arrow">&#9660;</div>
+        <div class="layer layer-repo">Repository Layer <div class="layer-sub">AppUserRepository, PredictionRecordRepository (Spring Data JPA)</div></div>
+        <div class="layer-arrow">&#9660;</div>
+        <div class="layer layer-db">Database <div class="layer-sub">H2 (default, file-based) or MySQL (via profile)</div></div>
+    </div>
+
+    <h3>Package Structure</h3>
+    <table>
+        <thead><tr><th>Package</th><th>Purpose</th><th>Classes</th></tr></thead>
+        <tbody>
+            <tr><td><code>config</code></td><td>Security configuration, model properties, data initialization</td><td>3</td></tr>
+            <tr><td><code>controller</code></td><td>MVC controllers for auth, user pages, admin pages</td><td>4</td></tr>
+            <tr><td><code>controller.api</code></td><td>REST API for sentiment analysis</td><td>1</td></tr>
+            <tr><td><code>dto</code></td><td>Data transfer objects for requests/responses</td><td>7</td></tr>
+            <tr><td><code>exception</code></td><td>Global exception handler, custom exceptions</td><td>3</td></tr>
+            <tr><td><code>model.entity</code></td><td>JPA entities (AppUser, PredictionRecord)</td><td>2</td></tr>
+            <tr><td><code>model.enums</code></td><td>Enumerations (Role, Sentiment)</td><td>2</td></tr>
+            <tr><td><code>repository</code></td><td>Spring Data JPA repositories</td><td>2</td></tr>
+            <tr><td><code>security</code></td><td>UserDetailsService, login success handler</td><td>2</td></tr>
+            <tr><td><code>service</code></td><td>Business logic: ML inference, transliteration, preprocessing, prediction orchestration</td><td>7</td></tr>
+            <tr><td><code>startup</code></td><td>Model readiness check on boot</td><td>1</td></tr>
+            <tr><td><code>util</code></td><td>Math utilities (softmax)</td><td>1</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ==================== 6. PROJECT STRUCTURE ==================== -->
+<div class="section" id="project-structure">
+    <h2>6. Project Structure</h2>
+
+    <pre>sentiment-app/
+&#9500;&#9472;&#9472; pom.xml
+&#9500;&#9472;&#9472; models/
+&#9474;   &#9492;&#9472;&#9472; xlmr-sentiment/          &#8592; ONNX model + tokenizer files
+&#9500;&#9472;&#9472; python/
+&#9474;   &#9492;&#9472;&#9472; export_model.py          &#8592; Hugging Face &#8594; ONNX export script
+&#9500;&#9472;&#9472; data/
+&#9474;   &#9492;&#9472;&#9472; sentimentdb.*            &#8592; H2 database files (auto-created)
+&#9500;&#9472;&#9472; document/
+&#9474;   &#9500;&#9472;&#9472; project-overview.html    &#8592; This document
+&#9474;   &#9500;&#9472;&#9472; database-architecture.*  &#8592; Database design &amp; ER diagram
+&#9474;   &#9500;&#9472;&#9472; user-manual.*            &#8592; End-user manual with screenshots
+&#9474;   &#9500;&#9472;&#9472; dfd-sentiment-analysis.* &#8592; Data flow diagram
+&#9474;   &#9492;&#9472;&#9472; screenshots/             &#8592; Application screenshots
+&#9500;&#9472;&#9472; src/main/
+&#9474;   &#9500;&#9472;&#9472; java/com/sentiment/analysis/
+&#9474;   &#9474;   &#9500;&#9472;&#9472; SentimentApplication.java
+&#9474;   &#9474;   &#9500;&#9472;&#9472; config/              &#8592; SecurityConfig, ModelProperties, DataInitializer
+&#9474;   &#9474;   &#9500;&#9472;&#9472; controller/          &#8592; AuthController, user &amp; admin controllers
+&#9474;   &#9474;   &#9500;&#9472;&#9472; dto/                 &#8592; Request/response objects
+&#9474;   &#9474;   &#9500;&#9472;&#9472; exception/           &#8592; Global handler, custom exceptions
+&#9474;   &#9474;   &#9500;&#9472;&#9472; model/               &#8592; JPA entities &amp; enums
+&#9474;   &#9474;   &#9500;&#9472;&#9472; repository/          &#8592; Spring Data JPA repositories
+&#9474;   &#9474;   &#9500;&#9472;&#9472; security/            &#8592; UserDetailsService, LoginSuccessHandler
+&#9474;   &#9474;   &#9500;&#9472;&#9472; service/             &#8592; ML inference, transliteration, prediction
+&#9474;   &#9474;   &#9500;&#9472;&#9472; startup/             &#8592; Model startup check
+&#9474;   &#9474;   &#9492;&#9472;&#9472; util/                &#8592; MathUtils
+&#9474;   &#9492;&#9472;&#9472; resources/
+&#9474;       &#9500;&#9472;&#9472; application.yml          &#8592; Main config (H2 default)
+&#9474;       &#9500;&#9472;&#9472; application-mysql.yml    &#8592; MySQL profile config
+&#9474;       &#9500;&#9472;&#9472; static/
+&#9474;       &#9474;   &#9500;&#9472;&#9472; css/app.css
+&#9474;       &#9474;   &#9500;&#9472;&#9472; js/common.js
+&#9474;       &#9474;   &#9492;&#9472;&#9472; favicon.svg
+&#9474;       &#9492;&#9472;&#9472; templates/
+&#9474;           &#9500;&#9472;&#9472; fragments/base.html  &#8592; Shared nav, head, user menu
+&#9474;           &#9500;&#9472;&#9472; auth/                &#8592; login.html, register.html
+&#9474;           &#9500;&#9472;&#9472; user/                &#8592; dashboard, analyze, history
+&#9474;           &#9492;&#9472;&#9472; admin/               &#8592; dashboard.html
+&#9492;&#9472;&#9472; src/test/
+    &#9492;&#9472;&#9472; java/...                     &#8592; 7 test classes, 44 tests</pre>
+</div>
+
+<!-- ==================== 7. FEATURES ==================== -->
+<div class="section" id="features">
+    <h2>7. Features</h2>
+
+    <div class="feature-grid">
+        <div class="feature-card">
+            <h4>&#127760; Cross-lingual Sentiment</h4>
+            <p>Analyzes text in Tamil, Malayalam, Kannada, and Telugu using XLM-RoBERTa.</p>
+        </div>
+        <div class="feature-card">
+            <h4>&#128260; Auto-transliteration</h4>
+            <p>Romanized Latin text is automatically converted to native script via ICU4J before analysis.</p>
+        </div>
+        <div class="feature-card">
+            <h4>&#128200; Confidence Scoring</h4>
+            <p>Shows per-class probabilities and flags low-confidence (&lt;60%) predictions.</p>
+        </div>
+        <div class="feature-card">
+            <h4>&#128218; Analysis History</h4>
+            <p>All predictions saved with filtering by language, pagination, and timestamps.</p>
+        </div>
+        <div class="feature-card">
+            <h4>&#128101; User Management</h4>
+            <p>Registration, login, role-based access (USER and ADMIN roles).</p>
+        </div>
+        <div class="feature-card">
+            <h4>&#128736; Admin Dashboard</h4>
+            <p>Overview of users, model health status, and recent registrations.</p>
+        </div>
+        <div class="feature-card">
+            <h4>&#128270; Language Detection</h4>
+            <p>Automatic detection of input language and script type (native vs. Latin).</p>
+        </div>
+        <div class="feature-card">
+            <h4>&#9889; In-JVM Inference</h4>
+            <p>ONNX model runs inside the JVM &#8212; no Python, no GPU, no external service.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== 8. SECURITY ==================== -->
+<div class="section" id="security">
+    <h2>8. Security</h2>
+
+    <table>
+        <thead><tr><th>Feature</th><th>Implementation</th></tr></thead>
+        <tbody>
+            <tr><td><strong>Authentication</strong></td><td>Spring Security form-based login with BCrypt password hashing</td></tr>
+            <tr><td><strong>Authorization</strong></td><td>Role-based access: <span class="badge badge-blue">USER</span> and <span class="badge badge-purple">ADMIN</span> roles</td></tr>
+            <tr><td><strong>CSRF Protection</strong></td><td>Enabled by default on all endpoints (except H2 console)</td></tr>
+            <tr><td><strong>Session Management</strong></td><td>Server-side sessions via Spring Security</td></tr>
+            <tr><td><strong>Password Validation</strong></td><td>Minimum 8 characters, confirmed at registration</td></tr>
+            <tr><td><strong>Data Isolation</strong></td><td>Users can only view their own analysis history</td></tr>
+        </tbody>
+    </table>
+
+    <h3>URL Access Control</h3>
+    <table>
+        <thead><tr><th>URL Pattern</th><th>Access</th></tr></thead>
+        <tbody>
+            <tr><td><code>/login</code>, <code>/register</code>, <code>/error</code></td><td><span class="badge badge-green">Public</span></td></tr>
+            <tr><td><code>/css/**</code>, <code>/js/**</code></td><td><span class="badge badge-green">Public</span></td></tr>
+            <tr><td><code>/h2-console/**</code></td><td><span class="badge badge-green">Public</span> (dev only)</td></tr>
+            <tr><td><code>/user/**</code>, <code>/api/sentiment/**</code></td><td><span class="badge badge-blue">USER</span></td></tr>
+            <tr><td><code>/admin/**</code>, <code>/api/admin/**</code></td><td><span class="badge badge-purple">ADMIN</span></td></tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ==================== 9. DATABASE ==================== -->
+<div class="section" id="database">
+    <h2>9. Database</h2>
+
+    <p>The application supports two database backends:</p>
+
+    <table>
+        <thead><tr><th>Database</th><th>Profile</th><th>Use Case</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><strong>H2</strong> (file-based)</td>
+                <td><span class="badge badge-green">default</span></td>
+                <td>Local development and standalone deployment. Data persisted at <code>./data/sentimentdb</code>. H2 console available at <code>/h2-console</code>.</td>
+            </tr>
+            <tr>
+                <td><strong>MySQL</strong></td>
+                <td><span class="badge badge-blue">mysql</span></td>
+                <td>Production deployment. Activate with <code>--spring.profiles.active=mysql</code>.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Database Tables</h3>
+    <table>
+        <thead><tr><th>Table</th><th>Columns</th><th>Purpose</th></tr></thead>
+        <tbody>
+            <tr><td><code>app_user</code></td><td>8</td><td>User accounts: id, username, email, password (BCrypt), role, enabled, created_at, last_login</td></tr>
+            <tr><td><code>prediction_record</code></td><td>13</td><td>Analysis history: id, original_text, processed_text, language, script_type, sentiment, confidence, probabilities (neg/neu/pos), transliterated, code_mixed, user_id, created_at</td></tr>
+        </tbody>
+    </table>
+
+    <div class="callout callout-info">
+        <span class="callout-icon">&#9432;</span>
+        <div>See <a href="database-architecture.html">database-architecture.html</a> for the full ER diagram, column-level details, and relationship mapping.</div>
+    </div>
+</div>
+
+<!-- ==================== 10. API ENDPOINTS ==================== -->
+<div class="section" id="api">
+    <h2>10. API Endpoints</h2>
+
+    <h3>Page Routes (Thymeleaf)</h3>
+    <table>
+        <thead><tr><th>Method</th><th>URL</th><th>Role</th><th>Description</th></tr></thead>
+        <tbody>
+            <tr><td>GET</td><td><code>/login</code></td><td>Public</td><td>Login page</td></tr>
+            <tr><td>GET</td><td><code>/register</code></td><td>Public</td><td>Registration page</td></tr>
+            <tr><td>POST</td><td><code>/register</code></td><td>Public</td><td>Process registration</td></tr>
+            <tr><td>GET</td><td><code>/user/dashboard</code></td><td>USER</td><td>User dashboard</td></tr>
+            <tr><td>GET</td><td><code>/user/analyze</code></td><td>USER</td><td>Analyze page</td></tr>
+            <tr><td>GET</td><td><code>/user/history</code></td><td>USER</td><td>Analysis history (paginated)</td></tr>
+            <tr><td>GET</td><td><code>/admin/dashboard</code></td><td>ADMIN</td><td>Admin overview</td></tr>
+        </tbody>
+    </table>
+
+    <h3>REST API</h3>
+    <table>
+        <thead><tr><th>Method</th><th>URL</th><th>Role</th><th>Description</th></tr></thead>
+        <tbody>
+            <tr><td>POST</td><td><code>/api/sentiment/analyze</code></td><td>USER</td><td>Run sentiment analysis on text</td></tr>
+        </tbody>
+    </table>
+
+    <h3>Analyze Request / Response</h3>
+    <pre>{
+  // Request
+  "text": "&#3336; &#3384;&#3391;&#3368;&#3391;&#3374; &#3381;&#3379;&#3376;&#3398; &#3368;&#3378;&#3405;&#3378;&#3364;&#3390;&#3363;&#3405;",
+  "language": "ml"           // optional: "ta", "ml", "kn", "te"
+}
+
+{
+  // Response
+  "sentiment": "POSITIVE",
+  "confidence": 0.846,
+  "probabilities": { "negative": 0.05, "neutral": 0.10, "positive": 0.85 },
+  "language": { "code": "ml", "name": "Malayalam", "script": "MALAYALAM" },
+  "transliterated": false,
+  "codeMixed": false,
+  "latencyMs": 142
+}</pre>
+</div>
+
+<!-- ==================== 11. TESTING ==================== -->
+<div class="section" id="testing">
+    <h2>11. Testing</h2>
+
+    <table>
+        <thead><tr><th>Test Class</th><th>Scope</th></tr></thead>
+        <tbody>
+            <tr><td><code>DjlSentimentServiceTest</code></td><td>ONNX model loading, inference, softmax output</td></tr>
+            <tr><td><code>LanguageDetectionServiceTest</code></td><td>Script detection for Tamil, Malayalam, Kannada, Telugu, Latin</td></tr>
+            <tr><td><code>TransliterationServiceTest</code></td><td>ICU4J Latin-to-native script conversion for all 4 languages</td></tr>
+            <tr><td><code>PreprocessingServiceTest</code></td><td>Text cleanup, normalization, whitespace handling</td></tr>
+            <tr><td><code>MathUtilsTest</code></td><td>Softmax function correctness</td></tr>
+            <tr><td><code>SentimentApiTest</code></td><td>REST API integration tests (authenticated requests)</td></tr>
+            <tr><td><code>SecurityAccessTest</code></td><td>URL access control, role-based authorization</td></tr>
+        </tbody>
+    </table>
+
+    <pre># Run all tests
+./mvnw test
+
+# Run a specific test class
+./mvnw test -Dtest=DjlSentimentServiceTest</pre>
+
+    <div class="callout callout-tip">
+        <span class="callout-icon">&#10003;</span>
+        <div>Tests use an in-memory H2 database (<code>application-test.yml</code>) and do not require MySQL or the ONNX model files to be present for unit tests.</div>
+    </div>
+</div>
+
+<!-- ==================== 12. CONFIGURATION ==================== -->
+<div class="section" id="configuration">
+    <h2>12. Configuration</h2>
+
+    <h3>Key Properties (<code>application.yml</code>)</h3>
+    <table>
+        <thead><tr><th>Property</th><th>Default</th><th>Description</th></tr></thead>
+        <tbody>
+            <tr><td><code>server.port</code></td><td><code>8080</code></td><td>HTTP port</td></tr>
+            <tr><td><code>spring.datasource.url</code></td><td><code>jdbc:h2:file:./data/sentimentdb</code></td><td>Database connection URL</td></tr>
+            <tr><td><code>spring.jpa.hibernate.ddl-auto</code></td><td><code>update</code></td><td>Schema auto-update on startup</td></tr>
+            <tr><td><code>app.model.path</code></td><td><code>./models/xlmr-sentiment</code></td><td>Path to ONNX model directory</td></tr>
+            <tr><td><code>app.model.max-length</code></td><td><code>256</code></td><td>Max token sequence length</td></tr>
+            <tr><td><code>app.model.low-confidence-threshold</code></td><td><code>0.60</code></td><td>Below this, results are flagged</td></tr>
+            <tr><td><code>app.model.startup-check</code></td><td><code>true</code></td><td>Verify model loads on startup</td></tr>
+            <tr><td><code>app.admin.username</code></td><td><code>admin</code></td><td>Default admin username</td></tr>
+            <tr><td><code>app.admin.email</code></td><td><code>admin@example.com</code></td><td>Default admin email</td></tr>
+            <tr><td><code>app.admin.password</code></td><td><code>${ADMIN_PASSWORD:Admin@12345}</code></td><td>Admin password (env-overridable)</td></tr>
+        </tbody>
+    </table>
+
+    <h3>Environment Variables</h3>
+    <table>
+        <thead><tr><th>Variable</th><th>Used By</th><th>Purpose</th></tr></thead>
+        <tbody>
+            <tr><td><code>ADMIN_PASSWORD</code></td><td>Default profile</td><td>Override the default admin password</td></tr>
+            <tr><td><code>DB_HOST</code></td><td>MySQL profile</td><td>MySQL host (default: <code>localhost</code>)</td></tr>
+            <tr><td><code>DB_PORT</code></td><td>MySQL profile</td><td>MySQL port (default: <code>3306</code>)</td></tr>
+            <tr><td><code>DB_NAME</code></td><td>MySQL profile</td><td>Database name (default: <code>sentimentdb</code>)</td></tr>
+            <tr><td><code>DB_USERNAME</code></td><td>MySQL profile</td><td>MySQL username (default: <code>root</code>)</td></tr>
+            <tr><td><code>DB_PASSWORD</code></td><td>MySQL profile</td><td>MySQL password (default: <code>root</code>)</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ==================== 13. BUILDING & RUNNING ==================== -->
+<div class="section" id="running">
+    <h2>13. Building &amp; Running</h2>
+
+    <h3>Prerequisites</h3>
+    <table>
+        <thead><tr><th>Requirement</th><th>Notes</th></tr></thead>
+        <tbody>
+            <tr><td>Java 21+</td><td>JDK required for building; JRE sufficient for running the JAR</td></tr>
+            <tr><td>ONNX model files</td><td>Place in <code>./models/xlmr-sentiment/</code> (run <code>python/export_model.py</code> to generate)</td></tr>
+        </tbody>
+    </table>
+
+    <h3>Commands</h3>
+    <pre># Build the project
+./mvnw clean package -DskipTests
+
+# Run with H2 (default)
+java -jar target/sentiment-analysis-0.0.1-SNAPSHOT.jar
+
+# Run with MySQL
+java -jar target/sentiment-analysis-0.0.1-SNAPSHOT.jar \
+  --spring.profiles.active=mysql
+
+# Run in development mode
+./mvnw spring-boot:run</pre>
+
+    <h3>First Launch</h3>
+    <p>On first startup, the application will:</p>
+    <ol style="padding-left:24px;font-size:14px;margin-bottom:12px;">
+        <li>Create the database schema automatically (H2 file or MySQL tables)</li>
+        <li>Create the default admin account (<code>admin</code> / <code>Admin@12345</code>)</li>
+        <li>Load and verify the ONNX sentiment model</li>
+        <li>Start listening on <code>http://localhost:8080</code></li>
+    </ol>
+
+    <div class="callout callout-info">
+        <span class="callout-icon">&#9432;</span>
+        <div>The H2 console is available at <code>http://localhost:8080/h2-console</code> for inspecting the database during development. Connect with JDBC URL <code>jdbc:h2:file:./data/sentimentdb</code>, username <code>sa</code>, no password.</div>
+    </div>
+</div>
+
+<!-- ==================== FOOTER ==================== -->
+<div class="doc-footer">
+    <p>Sentiment Analysis Application &#8212; Cross-lingual Dravidian Language Sentiment Analyzer</p>
+    <p>Java 21 &bull; Spring Boot 3.5.11 &bull; DJL 0.36.0 / ONNX Runtime &bull; ICU4J 75.1 &bull; XLM-RoBERTa</p>
+</div>
+
+</body>
+</html>
